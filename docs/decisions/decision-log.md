@@ -101,11 +101,19 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** One consistent "expected/found" shape makes diagnostics predictable and actionable; naming the lexeme lets users see the exact offending punctuation. The two assignment rules are distinct messages because they diagnose different mistakes (a non-name left side vs. a second assignment). Golden tests compare class and position only ([D-07]), so wording stays free to improve.  
 - **Affects:** `parser.py`, FEAT-004 (display of parser errors), DOC-002 (language documentation), FEAT-005 (golden cases).
 
-**[D-14]** RESERVED for FEAT-004: any REPL/display behavior not fixed by the spec.  
-- **Date / Session:** reserved 2026-10-26  
-- **Decision:** (to be written by the agent running FEAT-004)  
-- **Reasoning:** (to be written)  
-- **Affects:** (to be written)
+**[D-14]** REPL/display wording, spacing, and foreign-exception behavior not fixed by the spec (FEAT-004).  
+- **Date / Session:** 2026-10-26, FEAT-004 implementation session  
+- **Decision:** Locked these details:  
+  - The banner is four lines: a 44-character `-` rule, `MiniCalc 1.0  integer arithmetic language`, `Type :help for help, :quit to exit.`, and another rule. Color styles the title bold cyan and the hint dim. (The task prompt calls it "three lines" but enumerates four; the four enumerated lines were implemented.)  
+  - Values are bold green (`ESC[1;32m`) in results and script outcomes; assignment names stay plain. Help section headings are bold cyan. `:vars` and `:clear` output is unstyled.  
+  - `help_text()` has five sections separated by blank lines: Operators (highest to lowest precedence), Functions, Names, Commands, Examples. Rows are indented two spaces, use a 20-character left field, then two spaces before the description; each section ends with a blank line except the last.  
+  - `:vars` prints `ans` first when set, then `Environment.items()` (sorted by name), left-padding names to the longest shown name. `(no variables)` is printed only when both `ans` and variables are empty. `:clear` counts variables only (not `ans`) and prints `Cleared N variable(s).` with the literal `(s)`.  
+  - Unknown meta-commands print `Unknown command '<command>'. Type :help for a list.` as plain text, not as an error object. Commands are matched on the stripped line and are case-sensitive.  
+  - EOF and `KeyboardInterrupt` at the prompt print one blank line and exit 0. A `StopIteration` from an injected input iterator is treated like EOF so scripted input cannot loop forever.  
+  - Foreign exceptions print one line `Internal error: <Type>: <message>` (or `Internal error: <Type>` when the message is empty) through the REPL's configured output, and the REPL continues. Script mode reports the same line on stderr and exits 1; because `run_source` is one facade call, a foreign exception aborts the remaining script lines, while per-outcome formatting errors are caught and the loop continues. `-e` reports it on stderr and exits 1. No traceback is shown.  
+  - Unreadable or non-UTF-8 script files print `minicalc: cannot read '<path>': <detail>` on stderr and exit 2. An empty `-e` result prints nothing rather than a blank line.  
+- **Reasoning:** The spec and contract fix behavior but not exact wording, column widths, or the handling of unexpected exceptions; these choices keep output aligned, ASCII-safe, deterministic, and testable without touching the facade.  
+- **Affects:** `minicalc/display.py`, `minicalc/repl.py`, `minicalc/__main__.py`, `main.py`, `tests/test_display.py`, `tests/test_cli.py`.
 
 **[D-15]** RESERVED for INT-001: resolution of cross-stage discrepancies found during integration.  
 - **Date / Session:** reserved 2026-10-26  
