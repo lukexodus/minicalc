@@ -47,6 +47,7 @@ Status: **open**
 | :--- | :--- | :--- | :--- |
 | INT-001 | Integrate all tracks, full-suite green | `needs-review` | Report: `docs/reports/INT-001-claude-code-integration.md`. 432 passed, 0 skipped on Python 3.10.16 and 3.14.8; [D-15] logged |
 | INT-002 | Differential test and independent audit | `open` | Prompt: `docs/prompts/INT-002.md` |
+| FIX-001 | Post-integration fixes: `ans` help wording, script-mode stream order | `needs-review` | Report: `docs/reports/FIX-001-claude-code-post-integration-fixes.md`. 434 passed, 0 skipped on Python 3.10.16 and 3.14.8; [D-17] logged |
 
 ## Phase 4 — Documentation, Packaging & Release
 

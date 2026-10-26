@@ -1,0 +1,176 @@
+diff --git c/minicalc/__main__.py w/minicalc/__main__.py
+index 35f3e0d..a1246f3 100644
+--- c/minicalc/__main__.py
++++ w/minicalc/__main__.py
+@@ -49,6 +49,20 @@ def _build_parser() -> argparse.ArgumentParser:
+     return parser
+ 
+ 
++def _write_stderr(line: str) -> None:
++    """Write one error line to stderr without reordering merged streams.
++
++    Pending stdout is flushed first so that, when stdout and stderr share a
++    pipe or file (``2>&1``), results produced earlier still appear before this
++    error. Stderr is flushed immediately so the error keeps its place.
++
++    Args:
++        line: The complete line to write, without a trailing newline.
++    """
++    sys.stdout.flush()
++    print(line, file=sys.stderr, flush=True)
++
++
+ def _internal_error(exc: BaseException) -> str:
+     """Describe an unexpected exception on one line.
+ 
+@@ -81,10 +95,10 @@ def _run_expression(interpreter: Interpreter, expr: str, color: bool) -> int:
+             print(formatted)
+         return 0
+     except MiniCalcError as error:
+-        print(error.render(color), file=sys.stderr)
++        _write_stderr(error.render(color))
+         return 1
+     except Exception as exc:
+-        print(_internal_error(exc), file=sys.stderr)
++        _write_stderr(_internal_error(exc))
+         return 1
+ 
+ 
+@@ -104,13 +118,13 @@ def _run_file(interpreter: Interpreter, path: str, color: bool) -> int:
+         with open(path, "r", encoding="utf-8") as handle:
+             text = handle.read()
+     except (OSError, UnicodeError) as exc:
+-        print(f"minicalc: cannot read '{path}': {exc}", file=sys.stderr)
++        _write_stderr(f"minicalc: cannot read '{path}': {exc}")
+         return 2
+ 
+     try:
+         outcomes = interpreter.run_source(text)
+     except Exception as exc:
+-        print(_internal_error(exc), file=sys.stderr)
++        _write_stderr(_internal_error(exc))
+         return 1
+ 
+     exit_code = 0
+@@ -120,12 +134,12 @@ def _run_file(interpreter: Interpreter, path: str, color: bool) -> int:
+             if not formatted:
+                 continue
+             if outcome.error is not None:
+-                print(formatted, file=sys.stderr)
++                _write_stderr(formatted)
+                 exit_code = 1
+             else:
+                 print(formatted)
+         except Exception as exc:
+-            print(_internal_error(exc), file=sys.stderr)
++            _write_stderr(_internal_error(exc))
+             exit_code = 1
+     return exit_code
+ 
+@@ -147,10 +161,10 @@ def main(argv: list[str] | None = None) -> int:
+         return exc.code if isinstance(exc.code, int) else 0
+ 
+     if args.file is not None and args.expr is not None:
++        sys.stdout.flush()
+         parser.print_usage(sys.stderr)
+-        print(
+-            "minicalc: error: a file and -e/--expr cannot be used together",
+-            file=sys.stderr,
++        _write_stderr(
++            "minicalc: error: a file and -e/--expr cannot be used together"
+         )
+         return 2
+ 
+@@ -164,7 +178,7 @@ def main(argv: list[str] | None = None) -> int:
+     try:
+         return Repl(interpreter, color=color).run()
+     except Exception as exc:
+-        print(_internal_error(exc), file=sys.stderr)
++        _write_stderr(_internal_error(exc))
+         return 1
+ 
+ 
+diff --git c/minicalc/display.py w/minicalc/display.py
+index 39c2133..ff2053f 100644
+--- c/minicalc/display.py
++++ w/minicalc/display.py
+@@ -164,7 +164,7 @@ def help_text(color: bool = False) -> str:
+     ]
+     names = [
+         ("x = 7", "assign the value to a name"),
+-        ("ans", "value of the last successful statement"),
++        ("ans", "value of the last successful expression"),
+     ]
+     commands = [
+         (":help", "show this help"),
+diff --git c/tests/test_cli.py w/tests/test_cli.py
+index 98951f9..128156a 100644
+--- c/tests/test_cli.py
++++ w/tests/test_cli.py
+@@ -6,6 +6,10 @@ the full lexer, parser, and evaluator are still landing. The
+ expected to pass only after INT-001.
+ """
+ 
++import re
++import subprocess
++import sys
++from pathlib import Path
+ from types import SimpleNamespace
+ 
+ import pytest
+@@ -22,7 +26,7 @@ class FakeEnvironment:
+ 
+     Attributes:
+         variables: User-defined name-to-value bindings.
+-        ans: Value of the last successful statement, or ``None``.
++        ans: Value of the last successful expression, or ``None``.
+     """
+ 
+     def __init__(
+@@ -592,3 +596,46 @@ def test_cli_script_arithmetic_with_real_interpreter(
+         "line 2: x = 7",
+         "line 3: = 98",
+     ]
++
++
++@pytest.mark.integration
++def test_merged_streams_keep_source_line_order(tmp_path: Path) -> None:
++    """With ``2>&1``, results and errors keep their source-line order."""
++    script = tmp_path / "interleaved.mc"
++    script.write_text("1 + 1\n1 / 0\n2 + 2\n2 +\n3 + 3\n", encoding="utf-8")
++    root = Path(__file__).resolve().parents[1]
++    completed = subprocess.run(
++        [sys.executable, "-m", "minicalc", str(script)],
++        stdout=subprocess.PIPE,
++        stderr=subprocess.STDOUT,
++        cwd=root,
++        text=True,
++        check=False,
++    )
++    assert completed.returncode == 1
++    markers = [
++        int(first or second)
++        for first, second in re.findall(
++            r"line (\d+):|at line (\d+),", completed.stdout
++        )
++    ]
++    assert markers == [1, 2, 3, 4, 5]
++
++
++@pytest.mark.integration
++def test_separate_streams_keep_results_and_errors_split(tmp_path: Path) -> None:
++    """Without merging, results stay on stdout and errors stay on stderr."""
++    script = tmp_path / "split.mc"
++    script.write_text("1 + 1\n1 / 0\n2 + 2\n", encoding="utf-8")
++    root = Path(__file__).resolve().parents[1]
++    completed = subprocess.run(
++        [sys.executable, "-m", "minicalc", str(script)],
++        stdout=subprocess.PIPE,
++        stderr=subprocess.PIPE,
++        cwd=root,
++        text=True,
++        check=False,
++    )
++    assert completed.returncode == 1
++    assert completed.stdout.splitlines() == ["line 1: = 2", "line 3: = 4"]
++    assert "at line 2," in completed.stderr

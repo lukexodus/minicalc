@@ -49,6 +49,20 @@ def _build_parser() -> argparse.ArgumentParser:
     return parser
 
 
+def _write_stderr(line: str) -> None:
+    """Write one error line to stderr without reordering merged streams.
+
+    Pending stdout is flushed first so that, when stdout and stderr share a
+    pipe or file (``2>&1``), results produced earlier still appear before this
+    error. Stderr is flushed immediately so the error keeps its place.
+
+    Args:
+        line: The complete line to write, without a trailing newline.
+    """
+    sys.stdout.flush()
+    print(line, file=sys.stderr, flush=True)
+
+
 def _internal_error(exc: BaseException) -> str:
     """Describe an unexpected exception on one line.
 
@@ -81,10 +95,10 @@ def _run_expression(interpreter: Interpreter, expr: str, color: bool) -> int:
             print(formatted)
         return 0
     except MiniCalcError as error:
-        print(error.render(color), file=sys.stderr)
+        _write_stderr(error.render(color))
         return 1
     except Exception as exc:
-        print(_internal_error(exc), file=sys.stderr)
+        _write_stderr(_internal_error(exc))
         return 1
 
 
@@ -104,13 +118,13 @@ def _run_file(interpreter: Interpreter, path: str, color: bool) -> int:
         with open(path, "r", encoding="utf-8") as handle:
             text = handle.read()
     except (OSError, UnicodeError) as exc:
-        print(f"minicalc: cannot read '{path}': {exc}", file=sys.stderr)
+        _write_stderr(f"minicalc: cannot read '{path}': {exc}")
         return 2
 
     try:
         outcomes = interpreter.run_source(text)
     except Exception as exc:
-        print(_internal_error(exc), file=sys.stderr)
+        _write_stderr(_internal_error(exc))
         return 1
 
     exit_code = 0
@@ -120,12 +134,12 @@ def _run_file(interpreter: Interpreter, path: str, color: bool) -> int:
             if not formatted:
                 continue
             if outcome.error is not None:
-                print(formatted, file=sys.stderr)
+                _write_stderr(formatted)
                 exit_code = 1
             else:
                 print(formatted)
         except Exception as exc:
-            print(_internal_error(exc), file=sys.stderr)
+            _write_stderr(_internal_error(exc))
             exit_code = 1
     return exit_code
 
@@ -147,10 +161,10 @@ def main(argv: list[str] | None = None) -> int:
         return exc.code if isinstance(exc.code, int) else 0
 
     if args.file is not None and args.expr is not None:
+        sys.stdout.flush()
         parser.print_usage(sys.stderr)
-        print(
-            "minicalc: error: a file and -e/--expr cannot be used together",
-            file=sys.stderr,
+        _write_stderr(
+            "minicalc: error: a file and -e/--expr cannot be used together"
         )
         return 2
 
@@ -164,7 +178,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         return Repl(interpreter, color=color).run()
     except Exception as exc:
-        print(_internal_error(exc), file=sys.stderr)
+        _write_stderr(_internal_error(exc))
         return 1
 
 

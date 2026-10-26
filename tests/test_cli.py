@@ -6,6 +6,10 @@ the full lexer, parser, and evaluator are still landing. The
 expected to pass only after INT-001.
 """
 
+import re
+import subprocess
+import sys
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -22,7 +26,7 @@ class FakeEnvironment:
 
     Attributes:
         variables: User-defined name-to-value bindings.
-        ans: Value of the last successful statement, or ``None``.
+        ans: Value of the last successful expression, or ``None``.
     """
 
     def __init__(
@@ -592,3 +596,46 @@ def test_cli_script_arithmetic_with_real_interpreter(
         "line 2: x = 7",
         "line 3: = 98",
     ]
+
+
+@pytest.mark.integration
+def test_merged_streams_keep_source_line_order(tmp_path: Path) -> None:
+    """With ``2>&1``, results and errors keep their source-line order."""
+    script = tmp_path / "interleaved.mc"
+    script.write_text("1 + 1\n1 / 0\n2 + 2\n2 +\n3 + 3\n", encoding="utf-8")
+    root = Path(__file__).resolve().parents[1]
+    completed = subprocess.run(
+        [sys.executable, "-m", "minicalc", str(script)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        cwd=root,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 1
+    markers = [
+        int(first or second)
+        for first, second in re.findall(
+            r"line (\d+):|at line (\d+),", completed.stdout
+        )
+    ]
+    assert markers == [1, 2, 3, 4, 5]
+
+
+@pytest.mark.integration
+def test_separate_streams_keep_results_and_errors_split(tmp_path: Path) -> None:
+    """Without merging, results stay on stdout and errors stay on stderr."""
+    script = tmp_path / "split.mc"
+    script.write_text("1 + 1\n1 / 0\n2 + 2\n", encoding="utf-8")
+    root = Path(__file__).resolve().parents[1]
+    completed = subprocess.run(
+        [sys.executable, "-m", "minicalc", str(script)],
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        cwd=root,
+        text=True,
+        check=False,
+    )
+    assert completed.returncode == 1
+    assert completed.stdout.splitlines() == ["line 1: = 2", "line 3: = 4"]
+    assert "at line 2," in completed.stderr
