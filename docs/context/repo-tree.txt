@@ -1,0 +1,27 @@
+.
+├── docs
+│   ├── context
+│   │   ├── apc-bundle-quickref.md
+│   │   ├── apc-handoff-template.md
+│   │   ├── complete-context.md
+│   │   └── repo-tree.txt
+│   ├── decisions
+│   │   └── decision-log.md
+│   ├── guide
+│   │   └── COLLABORATOR-GUIDE.md
+│   ├── prompts
+│   │   ├── STANDALONE-ADOPTION-PROMPT.md
+│   │   └── STANDALONE-PROMPT-TEMPLATE.md
+│   ├── reports
+│   │   └── TASK-TEMPLATE.md
+│   └── tasks
+│       ├── high-level-tasks.md
+│       └── status.md
+├── patch
+├── scripts
+│   ├── apc-bundle.sh
+│   ├── manage-decisions.py
+│   ├── README.md
+│   ├── task-worktree.sh
+│   └── validate-report.py
+└── AGENTS.md
