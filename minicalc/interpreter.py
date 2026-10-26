@@ -107,11 +107,9 @@ class Interpreter:
                 ) from exc
 
             if isinstance(node, Assign):
-                result = Result("assign", value, node.target)
-            else:
-                result = Result("value", value)
+                return Result("assign", value, node.target)
             self.env.record_result(value)
-            return result
+            return Result("value", value)
         except MiniCalcError as error:
             raise error.with_source(source) from None
 

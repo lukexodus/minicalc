@@ -198,7 +198,7 @@ class Interpreter:
 
 `Interpreter.__init__` raises the interpreter recursion limit to at least 4000 if it is lower, and `run_line` converts any escaping `RecursionError` into a `ParseError` or `EvalError` (spec section 7).
 
-`run_line` on success calls `env.record_result(value)` (after the statement fully succeeded). On any error the environment is unchanged and the raised error has `source_line` set. `run_source` numbers lines from 1 and continues after errors.
+`run_line` on a successful expression calls `env.record_result(value)`; a successful assignment binds its variable and returns `kind="assign"` but does **not** update `ans`. On any error the environment is unchanged and the raised error has `source_line` set. `run_source` numbers lines from 1 and continues after errors.
 
 ## 11. `display.py` and `repl.py`
 

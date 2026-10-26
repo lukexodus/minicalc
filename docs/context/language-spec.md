@@ -146,7 +146,7 @@ Evaluation errors for the same table: `5 / 0` gives `DivisionByZeroError` at the
 ## 6. Names, variables, `ans`, built-ins
 
 - **Variables:** `x = <expression>` evaluates the right side, then binds `x`. The statement's result is the assigned value. A name that was never assigned raises `UndefinedNameError` at the name's position.
-- **`ans`:** read-only. Holds the value of the most recent *successful* statement (expression or assignment). Before any success it is unset, and reading it raises `UndefinedNameError`. A failed statement does not change `ans` or any variable (atomic statements).
+- **`ans`:** read-only. Holds the value of the most recent *successful expression*. Assignments do not change `ans` (see the section 1 example, where `ans * x` after `x = 7` uses the earlier `14`). Before any successful expression it is unset, and reading it raises `UndefinedNameError`. A failed statement does not change `ans` or any variable (atomic statements).
 - **Reserved names:** `ans` and every built-in function name. Assigning to one raises `AssignmentError` at the target name.
 - **Built-in functions** (the only functions in v1.0; there are no user-defined functions):
 
