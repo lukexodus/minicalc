@@ -44,7 +44,8 @@ Only ASCII digits and letters are valid. Any non-ASCII character (for example a 
 | Input | Error condition | Reported column |
 | :--- | :--- | :--- |
 | `3.14`, `3.` | Decimals are not supported (integers only) | the `.` |
-| `12abc` | Letters directly after digits | start of the number |
+| `12abc` | ASCII letter or `_` directly after digits | start of the number |
+| `12é` | Non-ASCII character directly after digits (an illegal character like any other) | the `é` |
 | `99999999999` | Literal greater than 2147483647 | start of the number |
 | `2 @ 3`, `$x`, `:` | Illegal character | the character |
 | `3 ! 4` | `!` not followed by `=` | the `!` |
@@ -112,12 +113,12 @@ Consequence of the grammar: `-2 ** 2` parses as `-(2 ** 2)` and equals `-4`. `2 
 | `a + b`, `a - b`, `a * b` | Ordinary integer arithmetic | Range |
 | `a / b` | Division **truncated toward zero** | `b == 0` is `DivisionByZeroError`. `INT_MIN / -1` is a range error |
 | `a // b` | **Floor** division (rounds toward negative infinity) | Same as `/` |
-| `a % b` | Floored modulo, paired with `//`: `a == (a // b) * b + a % b`. Result takes the sign of `b` | `b == 0` is `DivisionByZeroError` |
+| `a % b` | Floored modulo, paired with `//`: `a == (a // b) * b + a % b`. Result takes the sign of `b` | `b == 0` is `DivisionByZeroError`. `INT_MIN % -1` is `0` (the result is in range) |
 | `a ** b` | Exponentiation, `b >= 0` | `b < 0` is `DomainError`. Overflow is `IntegerRangeError` |
 | `-a`, `+a` | Negation, identity | `-INT_MIN` is a range error |
 | `==` `!=` `<` `<=` `>` `>=` | Comparison, result `1` or `0` | none |
 
-`**` rules: `x ** 0 == 1` (including `0 ** 0`), `0 ** n == 0` for `n > 0`, `1 ** n == 1`, `(-1) ** n` is `1` or `-1` by parity. Otherwise, when `|x| >= 2` and `b > 31`, raise `IntegerRangeError` immediately **without computing the power**, because `2 ** 1000000000` must fail instantly and never hang.
+`**` rules: `x ** 0 == 1` (including `0 ** 0`), `0 ** n == 0` for `n > 0`, `1 ** n == 1`, `(-1) ** n` is `1` or `-1` by parity. Otherwise, when `|x| >= 2` and `b > 31`, raise `IntegerRangeError` immediately **without computing the power**, because `2 ** 1000000000` must fail instantly and never hang. A negative exponent is a `DomainError` for every base, including `0` and `1`; that check comes before the special cases above.
 
 ### Worked examples (verified)
 
@@ -147,7 +148,7 @@ Evaluation errors for the same table: `5 / 0` gives `DivisionByZeroError` at the
 
 - **Variables:** `x = <expression>` evaluates the right side, then binds `x`. The statement's result is the assigned value. A name that was never assigned raises `UndefinedNameError` at the name's position.
 - **`ans`:** read-only. Holds the value of the most recent *successful expression*. Assignments do not change `ans` (see the section 1 example, where `ans * x` after `x = 7` uses the earlier `14`). Before any successful expression it is unset, and reading it raises `UndefinedNameError`. A failed statement does not change `ans` or any variable (atomic statements).
-- **Reserved names:** `ans` and every built-in function name. Assigning to one raises `AssignmentError` at the target name.
+- **Reserved names:** `ans` and every built-in function name. Assigning to one raises `AssignmentError` at the target name. The check happens before the right side is evaluated, so `ans = 1 / 0` is an `AssignmentError` at `ans`, not a `DivisionByZeroError`.
 - **Built-in functions** (the only functions in v1.0; there are no user-defined functions):
 
 | Function | Arity | Result |
@@ -155,7 +156,7 @@ Evaluation errors for the same table: `5 / 0` gives `DivisionByZeroError` at the
 | `abs(x)` | 1 | Absolute value. `abs(INT_MIN)` is a range error |
 | `min(a, b, ...)` | 1 or more | Smallest argument |
 | `max(a, b, ...)` | 1 or more | Largest argument |
-| `gcd(a, b)` | 2 | Greatest common divisor, always `>= 0`. `gcd(0, 0) == 0` |
+| `gcd(a, b)` | 2 | Greatest common divisor, always `>= 0`. `gcd(0, 0) == 0`. `gcd(INT_MIN, 0)` and `gcd(INT_MIN, INT_MIN)` are range errors (the true result, 2147483648, is out of range) |
 
 - Calling an unknown function (`foo(1)`), calling a variable (`x(1)`), or passing the wrong number of arguments raises `CallError`, reported at the function name. Using a built-in name without parentheses (`abs + 1`) raises `UndefinedNameError`.
 - Arity is checked first, before any argument is evaluated. Then arguments are evaluated left to right, and the first argument that fails determines the call's error.
