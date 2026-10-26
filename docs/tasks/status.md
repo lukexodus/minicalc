@@ -29,15 +29,15 @@ Status: **done**
 
 ## Phase 2 — Parallel Feature Tracks
 
-Status: **open**
+Status: **done**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| FEAT-001 | Full lexer | `needs-review` | Report: `docs/reports/FEAT-001-claude-code-lexer.md` |
-| FEAT-002 | Full parser | `needs-review` | Report: `docs/reports/FEAT-002-claude-code-parser.md`. Reserved [D-13] logged |
-| FEAT-003 | Evaluator, environment, built-ins | `needs-review` | Report: `docs/reports/FEAT-003-claude-code-evaluator.md`. Branch `task/FEAT-003` |
-| FEAT-004 | REPL, CLI, display | `needs-review` | Report: `docs/reports/FEAT-004-claude-code-repl-cli.md`. [D-14] logged |
-| FEAT-005 | Spec-derived golden cases | `needs-review` | Report: `docs/reports/FEAT-005-golden-cases.md` |
+| FEAT-001 | Full lexer | `done` | Report: `docs/reports/FEAT-001-claude-code-lexer.md`. Merged |
+| FEAT-002 | Full parser | `done` | Report: `docs/reports/FEAT-002-claude-code-parser.md`. Merged; [D-13] logged |
+| FEAT-003 | Evaluator, environment, built-ins | `done` | Report: `docs/reports/FEAT-003-claude-code-evaluator.md`. Merged |
+| FEAT-004 | REPL, CLI, display | `done` | Report: `docs/reports/FEAT-004-claude-code-repl-cli.md`. Merged; [D-14] logged |
+| FEAT-005 | Spec-derived golden cases | `done` | Report: `docs/reports/FEAT-005-golden-cases.md`. Merged; ans ruling applied |
 
 ## Phase 3 — Integration & Verification
 

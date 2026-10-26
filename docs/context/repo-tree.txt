@@ -1,4 +1,26 @@
 .
+├── artifacts
+│   ├── ARCH-002-claude-code-bootstrap-skeleton.md
+│   ├── ARCH-002-claude-code-bootstrap-skeleton.patch
+│   ├── CORE-001-claude-code-shared-vocabulary.md
+│   ├── CORE-001-claude-code-shared-vocabulary.patch
+│   ├── CORE-002-claude-code-golden-harness.md
+│   ├── CORE-002-claude-code-golden-harness.patch
+│   ├── CORE-003-claude-code-walking-skeleton.md
+│   ├── CORE-003-claude-code-walking-skeleton.patch
+│   ├── FEAT-001-claude-code-lexer.md
+│   ├── FEAT-001-claude-code-lexer.patch
+│   ├── FEAT-002-claude-code-parser.md
+│   ├── FEAT-002-claude-code-parser.patch
+│   ├── FEAT-003-claude-code-evaluator.md
+│   ├── FEAT-003-claude-code-evaluator.patch
+│   ├── FEAT-004-claude-code-repl-cli.md
+│   ├── FEAT-004-claude-code-repl-cli.patch
+│   ├── FEAT-005-golden-cases.md
+│   ├── FEAT-005-golden-cases.patch
+│   ├── high-level-tasks.md
+│   ├── minicalc-apc-seed.zip
+│   └── TASK-TEMPLATE.md
 ├── docs
 │   ├── context
 │   │   ├── apc-bundle-quickref.md
@@ -34,6 +56,11 @@
 │   │   ├── CORE-001-claude-code-shared-vocabulary.md
 │   │   ├── CORE-002-claude-code-golden-harness.md
 │   │   ├── CORE-003-claude-code-walking-skeleton.md
+│   │   ├── FEAT-001-claude-code-lexer.md
+│   │   ├── FEAT-002-claude-code-parser.md
+│   │   ├── FEAT-003-claude-code-evaluator.md
+│   │   ├── FEAT-004-claude-code-repl-cli.md
+│   │   ├── FEAT-005-golden-cases.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
@@ -41,6 +68,8 @@
 ├── examples
 ├── minicalc
 │   ├── ast_nodes.py
+│   ├── builtins.py
+│   ├── display.py
 │   ├── environment.py
 │   ├── errors.py
 │   ├── evaluator.py
@@ -48,13 +77,20 @@
 │   ├── interpreter.py
 │   ├── lexer.py
 │   ├── limits.py
+│   ├── __main__.py
 │   ├── parser.py
+│   ├── repl.py
 │   └── tokens.py
 ├── patch
 │   ├── ARCH-002-claude-code-bootstrap-skeleton.patch
 │   ├── CORE-001-claude-code-shared-vocabulary.patch
 │   ├── CORE-002-claude-code-golden-harness.patch
-│   └── CORE-003-claude-code-walking-skeleton.patch
+│   ├── CORE-003-claude-code-walking-skeleton.patch
+│   ├── FEAT-001-claude-code-lexer.patch
+│   ├── FEAT-002-claude-code-parser.patch
+│   ├── FEAT-003-claude-code-evaluator.patch
+│   ├── FEAT-004-claude-code-repl-cli.patch
+│   └── FEAT-005-golden-cases.patch
 ├── scripts
 │   ├── apc-bundle.sh
 │   ├── manage-decisions.py
@@ -63,19 +99,50 @@
 │   └── validate-report.py
 ├── tests
 │   ├── golden
+│   │   ├── arithmetic.mc
+│   │   ├── arithmetic.out
+│   │   ├── builtins.mc
+│   │   ├── builtins.out
+│   │   ├── comments_whitespace.mc
+│   │   ├── comments_whitespace.out
+│   │   ├── comparison.mc
+│   │   ├── comparison.out
+│   │   ├── demo.mc
+│   │   ├── demo.out
+│   │   ├── division.mc
+│   │   ├── division.out
+│   │   ├── lex_errors.mc
+│   │   ├── lex_errors.out
+│   │   ├── parse_errors.mc
+│   │   ├── parse_errors.out
+│   │   ├── power.mc
+│   │   ├── power.out
+│   │   ├── precedence.mc
+│   │   ├── precedence.out
+│   │   ├── range.mc
+│   │   ├── range.out
 │   │   ├── smoke.mc
-│   │   └── smoke.out
+│   │   ├── smoke.out
+│   │   ├── variables.mc
+│   │   └── variables.out
 │   ├── conftest.py
 │   ├── golden_format.py
+│   ├── test_builtins.py
+│   ├── test_cli.py
+│   ├── test_display.py
 │   ├── test_environment.py
 │   ├── test_errors.py
+│   ├── test_evaluator.py
 │   ├── test_golden_format.py
 │   ├── test_golden.py
 │   ├── test_interpreter.py
+│   ├── test_lexer.py
 │   ├── test_package.py
+│   ├── test_parser.py
 │   └── test_vocabulary.py
 ├── AGENTS.md
 ├── CLAUDE.md
+├── main.py
 ├── pytest.ini
 ├── requirements-dev.txt
 └── START-HERE.md
