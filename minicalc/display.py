@@ -164,7 +164,7 @@ def help_text(color: bool = False) -> str:
     ]
     names = [
         ("x = 7", "assign the value to a name"),
-        ("ans", "value of the last successful statement"),
+        ("ans", "value of the last successful expression"),
     ]
     commands = [
         (":help", "show this help"),

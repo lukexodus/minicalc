@@ -135,3 +135,12 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Decision:** (to be written by the agent running DOC-003)  
 - **Reasoning:** (to be written)  
 - **Affects:** (to be written)
+
+**[D-17]** Post-integration fixes: `ans` help wording and deterministic merged-stream order (FIX-001).  
+- **Date / Session:** 2026-10-26, FIX-001 implementation session (Claude Code)  
+- **Decision:** Two post-integration fixes.  
+  1. **`ans` wording (Item A).** The `:help` Names row now reads `value of the last successful expression` (previously `... statement`), matching [D-15] item 1 and spec section 6. A repo-wide search for stale `ans` phrasing found: `minicalc/display.py:167` and `tests/test_cli.py:25` (**fixed**); `minicalc/environment.py:4`, `minicalc/environment.py:18-19`, `minicalc/environment.py:43`, `minicalc/environment.py:60`, `minicalc/environment.py:63`, `tests/test_evaluator.py:294`, and `tests/test_environment.py:24` (**not fixed here** — outside FIX-001's file scope; flagged in the report for a follow-up or DOC-001). The remaining code hits say "successful statement" or "evaluate a statement first" and imply an assignment can set `ans`.  
+  2. **Stream order (Item B).** Script mode and `-e` mode now flush stdout before every write to stderr and flush stderr immediately after, via `_write_stderr` in `minicalc/__main__.py`. Which stream receives what ([D-14]) and all exit codes are unchanged; only flushing changed. A merged `2>&1` capture now shows results and errors in source-line order. This refines the "stream-buffering artifact" reading in [D-15] item 8 without changing the underlying split.  
+  3. **[D-15] item 9 ("no further discrepancies") was incomplete** because of Item A: it missed the stale `ans` help text in `minicalc/display.py:167` (and the matching CLI test docstring).  
+- **Reasoning:** [D-15] item 1 settles that only successful expressions update `ans`; shipping help text that says "statement" contradicts the spec to users. A misordered merged demo capture is a presentation risk, so explicit flushing is cheaper and safer than relying on buffer behaviour.  
+- **Affects:** `minicalc/display.py`, `minicalc/__main__.py`, `tests/test_cli.py`, DOC-002 (help wording), and the unfixed hits listed above.
