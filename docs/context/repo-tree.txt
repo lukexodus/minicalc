@@ -1,4 +1,31 @@
 .
+├── artifacts
+│   ├── ARCH-002-claude-code-bootstrap-skeleton.md
+│   ├── ARCH-002-claude-code-bootstrap-skeleton.patch
+│   ├── CORE-001-claude-code-shared-vocabulary.md
+│   ├── CORE-001-claude-code-shared-vocabulary.patch
+│   ├── CORE-002-claude-code-golden-harness.md
+│   ├── CORE-002-claude-code-golden-harness.patch
+│   ├── CORE-003-claude-code-walking-skeleton.md
+│   ├── CORE-003-claude-code-walking-skeleton.patch
+│   ├── FEAT-001-claude-code-lexer.md
+│   ├── FEAT-001-claude-code-lexer.patch
+│   ├── FEAT-002-claude-code-parser.md
+│   ├── FEAT-002-claude-code-parser.patch
+│   ├── FEAT-003-claude-code-evaluator.md
+│   ├── FEAT-003-claude-code-evaluator.patch
+│   ├── FEAT-004-claude-code-repl-cli.md
+│   ├── FEAT-004-claude-code-repl-cli.patch
+│   ├── FEAT-005-golden-cases.md
+│   ├── FEAT-005-golden-cases.patch
+│   ├── FIX-001.md
+│   ├── high-level-tasks.md
+│   ├── INT-001-addendum.md
+│   ├── INT-001-claude-code-integration.md
+│   ├── INT-001-claude-code-integration.patch
+│   ├── minicalc-apc-seed.zip
+│   ├── spec-rulings-phase2.patch
+│   └── TASK-TEMPLATE.md
 ├── docs
 │   ├── context
 │   │   ├── apc-bundle-quickref.md
