@@ -33,6 +33,7 @@
 │   │   ├── ARCH-002-claude-code-bootstrap-skeleton.md
 │   │   ├── CORE-001-claude-code-shared-vocabulary.md
 │   │   ├── CORE-002-claude-code-golden-harness.md
+│   │   ├── CORE-003-claude-code-walking-skeleton.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
@@ -40,14 +41,20 @@
 ├── examples
 ├── minicalc
 │   ├── ast_nodes.py
+│   ├── environment.py
 │   ├── errors.py
+│   ├── evaluator.py
 │   ├── __init__.py
+│   ├── interpreter.py
+│   ├── lexer.py
 │   ├── limits.py
+│   ├── parser.py
 │   └── tokens.py
 ├── patch
 │   ├── ARCH-002-claude-code-bootstrap-skeleton.patch
 │   ├── CORE-001-claude-code-shared-vocabulary.patch
-│   └── CORE-002-claude-code-golden-harness.patch
+│   ├── CORE-002-claude-code-golden-harness.patch
+│   └── CORE-003-claude-code-walking-skeleton.patch
 ├── scripts
 │   ├── apc-bundle.sh
 │   ├── manage-decisions.py
@@ -60,9 +67,11 @@
 │   │   └── smoke.out
 │   ├── conftest.py
 │   ├── golden_format.py
+│   ├── test_environment.py
 │   ├── test_errors.py
 │   ├── test_golden_format.py
 │   ├── test_golden.py
+│   ├── test_interpreter.py
 │   ├── test_package.py
 │   └── test_vocabulary.py
 ├── AGENTS.md
