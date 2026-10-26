@@ -36,7 +36,7 @@ Status: **open**
 | FEAT-001 | Full lexer | `open` | Prompt: `docs/prompts/FEAT-001.md` |
 | FEAT-002 | Full parser | `open` | Prompt: `docs/prompts/FEAT-002.md`. Reserved [D-13] |
 | FEAT-003 | Evaluator, environment, built-ins | `open` | Prompt: `docs/prompts/FEAT-003.md` |
-| FEAT-004 | REPL, CLI, display | `open` | Prompt: `docs/prompts/FEAT-004.md`. Reserved [D-14] |
+| FEAT-004 | REPL, CLI, display | `needs-review` | Report: `docs/reports/FEAT-004-claude-code-repl-cli.md`. [D-14] logged |
 | FEAT-005 | Spec-derived golden cases | `open` | Prompt: `docs/prompts/FEAT-005.md` |
 
 ## Phase 3 — Integration & Verification
