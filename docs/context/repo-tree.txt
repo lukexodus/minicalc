@@ -31,15 +31,21 @@
 │   │   └── STANDALONE-PROMPT-TEMPLATE.md
 │   ├── reports
 │   │   ├── ARCH-002-claude-code-bootstrap-skeleton.md
+│   │   ├── CORE-001-claude-code-shared-vocabulary.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
 │       └── status.md
 ├── examples
 ├── minicalc
-│   └── __init__.py
+│   ├── ast_nodes.py
+│   ├── errors.py
+│   ├── __init__.py
+│   ├── limits.py
+│   └── tokens.py
 ├── patch
-│   └── ARCH-002-claude-code-bootstrap-skeleton.patch
+│   ├── ARCH-002-claude-code-bootstrap-skeleton.patch
+│   └── CORE-001-claude-code-shared-vocabulary.patch
 ├── scripts
 │   ├── apc-bundle.sh
 │   ├── manage-decisions.py
@@ -48,8 +54,11 @@
 │   └── validate-report.py
 ├── tests
 │   ├── golden
-│   └── test_package.py
+│   ├── test_errors.py
+│   ├── test_package.py
+│   └── test_vocabulary.py
 ├── AGENTS.md
+├── CLAUDE.md
 ├── pytest.ini
 ├── requirements-dev.txt
 └── START-HERE.md

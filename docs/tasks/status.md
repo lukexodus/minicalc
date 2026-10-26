@@ -23,7 +23,7 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| CORE-001 | `limits.py`, `errors.py`, `tokens.py`, `ast_nodes.py` + tests | `open` | Prompt: `docs/prompts/CORE-001.md` |
+| CORE-001 | `limits.py`, `errors.py`, `tokens.py`, `ast_nodes.py` + tests | `needs-review` | Report: `docs/reports/CORE-001-claude-code-shared-vocabulary.md`. 42 tests pass |
 | CORE-002 | Golden-test harness | `open` | Prompt: `docs/prompts/CORE-002.md` |
 | CORE-003 | Walking skeleton and `Interpreter` facade | `open` | Prompt: `docs/prompts/CORE-003.md`. Exit gate for Phase 1 |
 
