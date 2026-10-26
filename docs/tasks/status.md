@@ -33,7 +33,7 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| FEAT-001 | Full lexer | `open` | Prompt: `docs/prompts/FEAT-001.md` |
+| FEAT-001 | Full lexer | `needs-review` | Report: `docs/reports/FEAT-001-claude-code-lexer.md` |
 | FEAT-002 | Full parser | `open` | Prompt: `docs/prompts/FEAT-002.md`. Reserved [D-13] |
 | FEAT-003 | Evaluator, environment, built-ins | `open` | Prompt: `docs/prompts/FEAT-003.md` |
 | FEAT-004 | REPL, CLI, display | `open` | Prompt: `docs/prompts/FEAT-004.md`. Reserved [D-14] |
