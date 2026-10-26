@@ -45,9 +45,9 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| INT-001 | Integrate all tracks, full-suite green | `needs-review` | Report: `docs/reports/INT-001-claude-code-integration.md`. 432 passed, 0 skipped on Python 3.10.16 and 3.14.8; [D-15] logged |
-| INT-002 | Differential test and independent audit | `needs-review` | Report: `docs/reports/INT-002-claude-code-differential-audit.md`. 5,600 generated comparisons + 160 state lines, zero mismatches; all 3 mutants detected |
-| FIX-001 | Post-integration fixes: `ans` help wording, script-mode stream order | `needs-review` | Report: `docs/reports/FIX-001-claude-code-post-integration-fixes.md`. 434 passed, 0 skipped on Python 3.10.16 and 3.14.8; [D-17] logged |
+| INT-001 | Integrate all tracks, full-suite green | `done` | Report: `docs/reports/INT-001-claude-code-integration.md`. Merged `c3a40a3`; accepted by APC audit; [D-15] logged |
+| INT-002 | Differential test and independent audit | `done` | Report: `docs/reports/INT-002-claude-code-differential-audit.md`. Merged; accepted; 5,600 comparisons + 160 state lines, zero mismatches; 3 agent mutants + 4 APC mutants detected |
+| FIX-001 | Post-integration fixes: `ans` help wording, script-mode stream order | `done` | Report: `docs/reports/FIX-001-claude-code-post-integration-fixes.md`. Merged `0b5b9b9`; accepted; [D-17] logged |
 
 ## Phase 4 — Documentation, Packaging & Release
 
