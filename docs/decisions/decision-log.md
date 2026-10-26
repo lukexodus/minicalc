@@ -16,13 +16,97 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 ---
 
 **[D-01]** Architecture baseline and repository governance locked.  
-- **Date / Session:** Inception  
-- **Decision:** Adopted APC (Analyzer, Planner, Controller) + Local Agent orchestration model with strict repository-as-source-of-truth governance.  
-- **Reasoning:** Decouples high-level strategic reasoning and cross-session memory from filesystem-level implementation and execution, preventing hallucinated drifts and lost context across credit resets.  
-- **Affects:** All documents, tasks, and development workflows.
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** Adopted the APC + Local Agent orchestration model with the repository as sole source of truth, unified-diff reporting, reserved decision IDs, and per-task worktrees.  
+- **Reasoning:** Decouples planning from implementation and prevents drift across agent sessions during a 4-day build.  
+- **Affects:** All documents, tasks, and workflows.
 
-**[D-02]** [Template Entry — Reserved for Core Architectural Decision]  
-- **Date / Session:** [Date]  
-- **Decision:** [e.g., Selected Framework / Database / Representation]  
-- **Reasoning:** [Why this was selected over alternatives]  
-- **Affects:** [Components impacted]
+**[D-02]** Implementation language and runtime.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** Python 3.10 or newer. Runtime uses the standard library only. `pytest` is a development-only dependency. Console styling uses plain ANSI escape codes (no `rich`).  
+- **Reasoning:** Shortest path to a correct, documented, runnable deliverable; the grader needs no build step or install. Zero runtime dependencies removes the main delivery risk. Considered Java (about 1.8x code, JDK needed) and C++ (about 2.2x code, overflow is undefined behavior).  
+- **Affects:** Whole codebase, `display.py`, submission packaging.
+
+**[D-03]** Language scope = option C.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** MiniCalc v1.0 supports: integer literals, `+ - * / // % **`, unary `+ -`, parentheses, comparisons (`== != < <= > >=`), variables with assignment, `ans`, built-ins `abs min max gcd`, `#` comments, REPL, script and `-e` modes. Non-goals: floats, strings, user functions, control flow, multiple statements per line, big integers.  
+- **Reasoning:** Covers the course requirements plus 'advanced features' for the Presentation criterion while keeping the grammar small enough to test and document in 4 days. Option D (control flow, functions) rejected as too risky for the schedule.  
+- **Affects:** `language-spec.md`, all FEAT tasks.
+
+**[D-04]** Front-end architecture.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** Hand-written lexer and recursive-descent parser with a precedence-aware grammar (see spec section 3). AST nodes are frozen dataclasses. Source is processed one line at a time; one statement per line. No parser-generator library.  
+- **Reasoning:** Best for explaining the full pipeline in the presentation, gives full control over error messages and positions, and is smaller than learning a library for this grammar size.  
+- **Affects:** `lexer.py`, `parser.py`, `ast_nodes.py`.
+
+**[D-05]** Integer model: signed 32-bit with checked arithmetic.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** Values are signed 32-bit integers. Every produced value is range-checked and raises `IntegerRangeError` instead of wrapping. Literals above 2147483647 are rejected by the lexer. `INT_MIN` is written `-2147483647 - 1`. `**` short-circuits to a range error when `|base| >= 2` and `exp > 31`.  
+- **Reasoning:** Python ints are unbounded, which would hide overflow; an explicit range gives a defensible reliability story and prevents runaway computation.  
+- **Affects:** `limits.py`, `lexer.py`, `evaluator.py`.
+
+**[D-06]** Operator semantics and precedence.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** `/` truncates toward zero; `//` floors; `%` is floored modulo paired with `//`; `**` is right-associative and binds tighter than unary minus (`-2 ** 2 == -4`); comparisons are non-associative and yield 1 or 0; negative exponent is a `DomainError`. Full table in spec sections 3 and 5.  
+- **Reasoning:** Truncating `/` matches calculators and C-family languages; floor `//` and `%` match Python and the identity `a == (a // b) * b + a % b`. Both common intents are expressible.  
+- **Affects:** `parser.py`, `evaluator.py`, tests.
+
+**[D-07]** Error model.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** `MiniCalcError` hierarchy (spec section 7). Each error carries `SourcePos` (line, col). `render()` prints a message plus source line plus caret. Errors never crash the REPL. Statements are atomic: a failed statement changes no variable and not `ans`. Golden tests compare only the error class and `line:col`, never message text.  
+- **Reasoning:** Positioned, categorized errors satisfy 'handle errors like incorrect format' and the Runtime criterion; not comparing message text lets parallel authors word messages freely.  
+- **Affects:** `errors.py`, all stages, golden tests.
+
+**[D-08]** Names, `ans`, and reserved words.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** Identifiers `[A-Za-z_][A-Za-z0-9_]*`, case-sensitive. `ans` is read-only and unset until the first successful statement. Reserved: `ans`, `abs`, `min`, `max`, `gcd`. Built-in names cannot be assigned or used as values. No user-defined functions.  
+- **Reasoning:** Prevents shadowing bugs and keeps evaluation rules trivial to specify.  
+- **Affects:** `environment.py`, `builtins.py`, `evaluator.py`.
+
+**[D-09]** Interface (CLI/REPL) contract.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** Modes: REPL (default), script file, `-e EXPR`. Prompt `minicalc> `. Results print `= <v>` or `<name> = <v>`. Meta-commands `:help :vars :clear :quit :q`. Exit codes 0 / 1 (a MiniCalc error occurred in script or `-e` mode) / 2 (usage). ANSI colors only on a TTY with `NO_COLOR` unset. Script mode continues after errors.  
+- **Reasoning:** Directly targets the Runtime criterion (prompts, symbols, spacing) and makes behavior scriptable and testable.  
+- **Affects:** `repl.py`, `display.py`, `__main__.py`, `main.py`.
+
+**[D-10]** Test strategy.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** `pytest`. Layers: unit tests per module, golden tests (`tests/golden`, format in interface-contract section 12), and a randomized differential test whose oracle is written from the spec only, by an agent that did not write the evaluator.  
+- **Reasoning:** Independent verification catches shared misunderstandings; golden files double as the demo script for the presentation.  
+- **Affects:** `tests/`, FEAT-005, INT-002.
+
+**[D-11]** Documentation standard.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** Every module has a docstring. Every class has a docstring with an `Attributes:` section describing every class variable and instance attribute. Every public function has a docstring with `Args:`/`Returns:`/`Raises:` as applicable. `scripts/check_docs.py` enforces this and must pass before submission.  
+- **Reasoning:** The Documentation criterion explicitly requires descriptions of all class variables for the top band.  
+- **Affects:** All code, DOC-001.
+
+**[D-12]** Submission packaging.  
+- **Date / Session:** 2026-10-26, APC planning session 1  
+- **Decision:** The submission ZIP contains `minicalc/`, `tests/`, `examples/`, `main.py`, `README.md`, `docs/LANGUAGE.md` (and design docs it references). It excludes `.git/`, worktrees, `patch/`, `docs/reports/`, `docs/prompts/`, bundles, and caches. Built by `scripts/make_submission.py`, verified by unzipping into a clean directory and running the tests.  
+- **Reasoning:** Graders need a clean, runnable, documented source tree, not orchestration artifacts. Verified unzip-and-run removes the largest delivery risk.  
+- **Affects:** DOC-003.
+
+**[D-13]** RESERVED for FEAT-002: parser error-message wording conventions.  
+- **Date / Session:** reserved 2026-10-26  
+- **Decision:** (to be written by the agent running FEAT-002)  
+- **Reasoning:** (to be written)  
+- **Affects:** (to be written)
+
+**[D-14]** RESERVED for FEAT-004: any REPL/display behavior not fixed by the spec.  
+- **Date / Session:** reserved 2026-10-26  
+- **Decision:** (to be written by the agent running FEAT-004)  
+- **Reasoning:** (to be written)  
+- **Affects:** (to be written)
+
+**[D-15]** RESERVED for INT-001: resolution of cross-stage discrepancies found during integration.  
+- **Date / Session:** reserved 2026-10-26  
+- **Decision:** (to be written by the agent running INT-001)  
+- **Reasoning:** (to be written)  
+- **Affects:** (to be written)
+
+**[D-16]** RESERVED for DOC-003: final submission checklist outcomes and any cut-line decisions.  
+- **Date / Session:** reserved 2026-10-26  
+- **Decision:** (to be written by the agent running DOC-003)  
+- **Reasoning:** (to be written)  
+- **Affects:** (to be written)

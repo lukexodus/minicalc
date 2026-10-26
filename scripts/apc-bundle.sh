@@ -10,6 +10,8 @@ set -euo pipefail
 PROFILE_CORE=(
   AGENTS.md
   docs/context/complete-context.md
+  docs/context/language-spec.md
+  docs/context/interface-contract.md
   docs/context/apc-handoff-template.md
   docs/context/apc-bundle-quickref.md
   docs/context/repo-tree.txt

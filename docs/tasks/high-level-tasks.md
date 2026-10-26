@@ -1,68 +1,111 @@
 # High-Level Tasks & Roadmap — MiniCalc
 
-This document defines the phased macro-architecture and milestones for MiniCalc. Unlike `docs/tasks/status.md` (which changes continuously as individual units of work land), this plan outlines strategic phases, dependency ordering, exit gates, and delegation boundaries.
+Phased macro plan. Live state is in `docs/tasks/status.md`; this file changes only when the plan changes. Calendar: **today is Mon Oct 26, 2026; deadline Fri Oct 30, 2026, 17:00** (internal submit target: Oct 30, 12:00).
+
+Token figures are rough estimates of agent *output* per task (code + tests + report), plus or minus 40%. Reading context and revision rounds add 30 to 50%.
 
 ---
 
-## Phase 0 — Inception, Design Lock & Requirements
+## Phase 0 — Design Lock & Bootstrap (Mon Oct 26)
 
-**Purpose:** Formalize project scope, theoretical/technical anchors, requirements, and high-level architectural constraints before code is written.
+**Purpose:** freeze what is being built so parallel work cannot diverge.
 
-### Deliverables:
-- Requirements document / RFC detailing goals, non-goals, and success metrics.
-- Core architecture diagram and component split.
-- Identification of baseline datasets, external APIs, and key technical risks.
+| ID | Deliverable | Owner | Est. tokens |
+| :--- | :--- | :--- | :--- |
+| ARCH-001 | Design lock: `language-spec.md`, `interface-contract.md`, decisions [D-01..D-12], roadmap, status, task prompts | APC AI | done in planning session |
+| ARCH-002 | Repo bootstrap: git init, drop in seed pack, package skeleton, `pytest` config, `.gitignore`, first commit, verify tooling | any agent | 1.5k |
 
-**Exit Gate:** All stakeholders/advisers sign off on the design. No Phase 1 implementation begins until design lock is achieved.
-
----
-
-## Phase 1 — Shared Infrastructure & Interface Contracts
-
-**Purpose:** Establish the technical foundation that all subsequent tracks depend on. Front-loading strict interfaces prevents divergent implementations during parallel work.
-
-### Deliverables:
-1. **Interface & Contract Specification:** Canonical interfaces, protocols, and data models locked in `docs/context/`.
-2. **Canonical Data Representation:** Single in-memory and persistent model used across the entire codebase.
-3. **Data / Fixture Normalization:** Ingestion scripts or golden fixtures normalized against ground truth.
-4. **Measurement / Test Harness:** Shared runner capable of measuring correctness, performance, or resource utilization uniformly.
-5. **Null / Baseline Component Smoke Test:** A trivial baseline component implemented and run through the harness end-to-end to validate pipelines before real features are written.
-
-**Exit Gate:** The baseline component passes all verification stages through the harness end-to-end.
+**Exit gate:** seed pack committed; `pytest -q` runs (zero tests collected is acceptable); `./scripts/task-worktree.sh start TEST-000` works and is cleaned up; operator confirms the spec.
 
 ---
 
-## Phase 2 — Parallel Track Execution
+## Phase 1 — Shared Infrastructure & Contracts (Mon Oct 26 to Tue Oct 27 AM)
 
-**Purpose:** Concurrent development of distinct strategies, modules, or features by local agents operating in dedicated git worktrees.
+**Purpose:** put the shared vocabulary in code and prove the pipeline end to end before real features.
 
-### Key Rules:
-- Each track develops against the Phase 1 interface contract.
-- Each track works in an isolated worktree (`task/<TASK-ID>`).
-- Independent validation against unit tests and small-scale smoke fixtures before integration.
+| ID | Deliverable | Depends on | Est. tokens |
+| :--- | :--- | :--- | :--- |
+| CORE-001 | `limits.py`, `errors.py`, `tokens.py`, `ast_nodes.py` + unit tests | ARCH-002 | 2.5k |
+| CORE-002 | Golden-test harness (`tests/conftest.py`, `tests/test_golden.py`) + canonical format | CORE-001 | 2k |
+| CORE-003 | Walking skeleton: stub lexer/parser/evaluator/environment + real `interpreter.py` facade; `42` runs end to end | CORE-001, CORE-002 | 2.5k |
 
-**Exit Gate:** All parallel modules independently satisfy the interface conformance suite.
-
----
-
-## Phase 3 — Integration & Verification
-
-**Purpose:** Merge parallel tracks into the shared application driver and execute comprehensive validation.
-
-### Deliverables:
-1. Unified registration and configuration wiring (e.g., registry, CLI flags).
-2. End-to-end verification, benchmarks, or experiment sweeps.
-3. Budget / resource monitoring and regression testing.
-
-**Exit Gate:** Complete test suite passes; production runs / benchmarks succeed without error.
+**Exit gate:** golden test `smoke.mc` (`42` -> `OK 42`) passes through the full pipeline; facade API matches the contract exactly.
 
 ---
 
-## Phase 4 — Analysis, Documentation & Release
+## Phase 2 — Parallel Feature Tracks (Tue Oct 27)
 
-**Purpose:** Synthesize findings, compile release documentation, and publish deliverables.
+**Purpose:** five independent tracks, each in its own worktree, each owning separate files.
 
-### Deliverables:
-1. Final analysis reports, benchmark plots, or release artifacts.
-2. User guides, API references, and migration manuals.
-3. Post-mortem / close-out handoff documentation.
+| ID | Track | Owns | Depends on | Est. tokens |
+| :--- | :--- | :--- | :--- | :--- |
+| FEAT-001 | Full lexer | `lexer.py`, `tests/test_lexer.py` | CORE-003 | 2.5k |
+| FEAT-002 | Full parser | `parser.py`, `tests/test_parser.py` | CORE-003 | 3.5k |
+| FEAT-003 | Evaluator, environment, built-ins | `evaluator.py`, `environment.py`, `builtins.py`, `tests/test_evaluator.py` | CORE-003 | 3.5k |
+| FEAT-004 | REPL, CLI, display | `repl.py`, `display.py`, `__main__.py`, `main.py`, `tests/test_cli.py` | CORE-003 | 3k |
+| FEAT-005 | Spec-derived golden cases (auditor role, different model lineage) | `tests/golden/*` | CORE-002 (spec only, not the code) | 3k |
+
+**Exit gate:** each track passes its own tests against the contract; FEAT-005 cases exist for every spec table row.
+
+---
+
+## Phase 3 — Integration & Verification (Wed Oct 28)
+
+| ID | Deliverable | Depends on | Est. tokens |
+| :--- | :--- | :--- | :--- |
+| INT-001 | Merge all tracks, run the full suite and golden cases, fix cross-stage mismatches (log in [D-15]) | FEAT-001..005 | 2k |
+| INT-002 | Randomized differential test against a spec-derived oracle; independent audit report | INT-001 (oracle written earlier, from spec only) | 2.5k |
+
+**Exit gate:** `pytest -q` fully green; all golden cases pass; differential test finds zero mismatches over at least 2,000 random expressions; manual REPL walkthrough recorded in the INT-001 report.
+
+---
+
+## Phase 4 — Documentation, Packaging & Release (Wed Oct 28 PM to Fri Oct 30)
+
+| ID | Deliverable | Depends on | Est. tokens |
+| :--- | :--- | :--- | :--- |
+| DOC-001 | Docstrings with `Attributes:` on every class; `scripts/check_docs.py` | INT-001 (code stable) | 3k |
+| DOC-002 | `README.md`, `docs/LANGUAGE.md` (grammar, semantics, PL evaluation criteria), `examples/*.mc`, presentation notes | spec; polish after INT-001 | 4k |
+| DOC-003 | `scripts/make_submission.py`, verified clean unzip-and-run, upload checklist | DOC-001, DOC-002 | 2k |
+
+**Exit gate:** `check_docs.py` passes; the submission ZIP unzips into an empty folder and `pytest -q` passes there; Drive link opens in an incognito window.
+
+---
+
+## Schedule
+
+| Day | Target |
+| :--- | :--- |
+| Mon Oct 26 | ARCH-001 (done), ARCH-002, CORE-001, CORE-002. Stretch: CORE-003 |
+| Tue Oct 27 | CORE-003 (if not done), FEAT-001 to FEAT-005 in parallel |
+| Wed Oct 28 | INT-001, INT-002, DOC-001, DOC-002 draft |
+| Thu Oct 29 | DOC-002 final, DOC-003, rehearse the demo, buffer for fixes |
+| Fri Oct 30 | AM: final checks, build ZIP, upload to Drive, post link on MVLE. **Submit by 12:00.** Hard deadline 17:00 |
+
+## Critical path
+
+```
+ARCH-002 -> CORE-001 -> CORE-003 -> FEAT-001/002/003 -> INT-001 -> DOC-001 -> DOC-003 -> submit
+              CORE-002 ----^         FEAT-004, FEAT-005 ----^   DOC-002 ----^
+```
+
+## Cut line (if behind at end of Wed Oct 28)
+
+Cut in this order, recording each in [D-16]. **Never cut:** error handling, the Attributes docs, packaging.
+1. INT-002 differential test (keep the audit report only).
+2. Breadth of FEAT-005 beyond one case per spec table row.
+3. REPL meta-commands `:vars` and `:clear`.
+4. Built-ins `min`, `max`, `gcd` (keep `abs`).
+5. Comparison operators.
+
+Any cut needs a spec edit by the APC AI so code, tests, and docs stay consistent.
+
+## Assignment (operator fills in)
+
+| Task | Suggested agent | Human owner |
+| :--- | :--- | :--- |
+| ARCH-002, CORE-001, CORE-003, FEAT-003 | Claude Code (lead implementer) | TBD |
+| FEAT-001, FEAT-002 | Claude Code or opencode | TBD |
+| FEAT-004, DOC-001, DOC-002, DOC-003 | opencode / Cursor | TBD |
+| CORE-002, FEAT-005, INT-002 | Gemini (independent auditor lineage) | TBD |
+| INT-001 | Claude Code | TBD |
