@@ -1,0 +1,13 @@
+OK 2147483647
+ERR IntegerRangeError 3:12
+ERR IntegerRangeError 4:19
+OK -2147483648
+ERR IntegerRangeError 6:7
+OK 2147395600
+ERR IntegerRangeError 8:1
+ERR LexError 9:1
+ERR IntegerRangeError 10:12
+ERR IntegerRangeError 11:13
+OK 2147483647
+OK -2147483647
+ERR IntegerRangeError 14:8

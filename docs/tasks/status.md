@@ -37,7 +37,7 @@ Status: **open**
 | FEAT-002 | Full parser | `open` | Prompt: `docs/prompts/FEAT-002.md`. Reserved [D-13] |
 | FEAT-003 | Evaluator, environment, built-ins | `open` | Prompt: `docs/prompts/FEAT-003.md` |
 | FEAT-004 | REPL, CLI, display | `open` | Prompt: `docs/prompts/FEAT-004.md`. Reserved [D-14] |
-| FEAT-005 | Spec-derived golden cases | `open` | Prompt: `docs/prompts/FEAT-005.md` |
+| FEAT-005 | Spec-derived golden cases | `needs-review` | Report: `docs/reports/FEAT-005-golden-cases.md` |
 
 ## Phase 3 — Integration & Verification
 
