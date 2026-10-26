@@ -18,15 +18,21 @@ PROFILE_CORE=(
   docs/decisions/decision-log.md
   docs/tasks/status.md
   docs/tasks/high-level-tasks.md
-  docs/prompts/STANDALONE-ADOPTION-PROMPT.md
+  docs/prompts/*.md
   docs/guide/COLLABORATOR-GUIDE.md
 )
 
 PROFILE_DEV=(
   "${PROFILE_CORE[@]}"
-  # Add key domain models, specs, and interfaces:
-  # minicalc/core.py
-  # tests/test_core.py
+  # Source, tests, and patches so the auditor can rebuild and run the suite.
+  minicalc/*.py
+  main.py
+  pytest.ini
+  tests/*.py
+  tests/golden/*
+  patch/*.patch
+  scripts/*.sh
+  scripts/*.py
 )
 
 # full: union of all profiles, de-duplicated during resolution
