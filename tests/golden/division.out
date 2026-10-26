@@ -1,0 +1,26 @@
+OK 3
+OK -3
+OK -3
+OK 3
+OK 3
+OK -4
+OK -4
+OK 3
+OK 1
+OK 1
+OK -1
+OK -1
+OK 0
+OK 0
+OK 0
+OK 6
+OK -6
+OK 6
+OK -8
+OK -7
+ERR DivisionByZeroError 22:3
+ERR DivisionByZeroError 23:3
+ERR DivisionByZeroError 24:3
+ERR IntegerRangeError 25:19
+ERR IntegerRangeError 26:19
+OK 0

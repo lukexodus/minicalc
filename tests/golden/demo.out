@@ -1,0 +1,14 @@
+OK x=7
+OK y=3
+OK 23
+OK 30
+OK 49
+OK 1
+OK 7
+OK 1
+ERR DivisionByZeroError 10:7
+OK 7
+ERR ParseError 12:4
+ERR LexError 13:2
+OK 7
+OK 10

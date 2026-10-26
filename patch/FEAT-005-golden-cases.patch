@@ -1,0 +1,688 @@
+diff --git c/tests/golden/arithmetic.mc w/tests/golden/arithmetic.mc
+new file mode 100644
+index 0000000..f68a276
+--- /dev/null
++++ w/tests/golden/arithmetic.mc
+@@ -0,0 +1,24 @@
++# Spec section 5: + - * on small/large operands, zero, negatives, parentheses, whitespace
++2 + 3
++2+3
++  2   +   3  
++	2	+	3
++2 + 3 * 4
++(2 + 3) * 4
++2 * (3 + 4)
++10 - 3 - 2
++2 - 5
++-3 + 1
++-2 * 3
++5 * 0
++0 + 0
++0 - 5
++0 * 2147483647
++2147483647 + 0
++2147483647 - 2147483647
++-2147483647 + 2147483647
++-2147483647 - 1
++((1))
++-(2 + 3)
++2 * 3 + 4 * 5
++100000 * 20000
+diff --git c/tests/golden/arithmetic.out w/tests/golden/arithmetic.out
+new file mode 100644
+index 0000000..602823d
+--- /dev/null
++++ w/tests/golden/arithmetic.out
+@@ -0,0 +1,23 @@
++OK 5
++OK 5
++OK 5
++OK 5
++OK 14
++OK 20
++OK 14
++OK 5
++OK -3
++OK -2
++OK -6
++OK 0
++OK 0
++OK -5
++OK 0
++OK 2147483647
++OK 0
++OK 0
++OK -2147483648
++OK 1
++OK -5
++OK 26
++OK 2000000000
+diff --git c/tests/golden/builtins.mc w/tests/golden/builtins.mc
+new file mode 100644
+index 0000000..a46e84a
+--- /dev/null
++++ w/tests/golden/builtins.mc
+@@ -0,0 +1,37 @@
++# Spec section 6: abs/min/max/gcd, arity, argument order, reserved names
++abs(5)
++abs(-5)
++abs(0)
++abs(-2147483647 - 1)
++min(3, 1, 2)
++max(3, 1, 2)
++min(5)
++max(-3, -7)
++min(0, -1)
++gcd(12, 18)
++gcd(0, 0)
++gcd(0, 5)
++gcd(-12, 18)
++gcd(12, -18)
++gcd(-12, -18)
++gcd(17, 5)
++max(min(3, 5), abs(-2))
++gcd(abs(-12), max(8, 6))
++abs(-3) + abs(3)
++max(2147483647, -1)
++min(2147483647, 0)
++x = 5
++x(1)
++foo(1)
++abs + 1
++gcd
++abs()
++abs(1, 2)
++gcd(1)
++gcd(1, 2, 3)
++min()
++max(1 / 0, 2 / 0)
++gcd(1 / 0, 2)
++abs(1 / 0, 2)
++min(1 / 0)
++max(abs(-1), 2 ** 31)
+diff --git c/tests/golden/builtins.out w/tests/golden/builtins.out
+new file mode 100644
+index 0000000..bc6c57b
+--- /dev/null
++++ w/tests/golden/builtins.out
+@@ -0,0 +1,36 @@
++OK 5
++OK 5
++OK 0
++ERR IntegerRangeError 5:1
++OK 1
++OK 3
++OK 5
++OK -3
++OK -1
++OK 6
++OK 0
++OK 5
++OK 6
++OK 6
++OK 6
++OK 1
++OK 3
++OK 4
++OK 6
++OK 2147483647
++OK 0
++OK x=5
++ERR CallError 24:1
++ERR CallError 25:1
++ERR UndefinedNameError 26:1
++ERR UndefinedNameError 27:1
++ERR CallError 28:1
++ERR CallError 29:1
++ERR CallError 30:1
++ERR CallError 31:1
++ERR CallError 32:1
++ERR DivisionByZeroError 33:7
++ERR DivisionByZeroError 34:7
++ERR CallError 35:1
++ERR DivisionByZeroError 36:7
++ERR IntegerRangeError 37:16
+diff --git c/tests/golden/comments_whitespace.mc w/tests/golden/comments_whitespace.mc
+new file mode 100644
+index 0000000..7048680
+--- /dev/null
++++ w/tests/golden/comments_whitespace.mc
+@@ -0,0 +1,15 @@
++# Spec section 2: blank lines, comments, whitespace-only lines, line numbering
++# comment-only line
++
++    
++2 + 3 # trailing comment
++2 + 3#no space before hash
++4 + 5
++   # indented comment
++#
++	
++7 * 6
++2 +
++10 - 3
++
++# final comment
+diff --git c/tests/golden/comments_whitespace.out w/tests/golden/comments_whitespace.out
+new file mode 100644
+index 0000000..6b44912
+--- /dev/null
++++ w/tests/golden/comments_whitespace.out
+@@ -0,0 +1,6 @@
++OK 5
++OK 5
++OK 9
++OK 42
++ERR ParseError 12:4
++OK 7
+diff --git c/tests/golden/comparison.mc w/tests/golden/comparison.mc
+new file mode 100644
+index 0000000..c120e60
+--- /dev/null
++++ w/tests/golden/comparison.mc
+@@ -0,0 +1,28 @@
++# Spec section 5: comparisons on equal/less/greater operands; non-associative
++3 == 3
++3 == 4
++3 != 4
++3 != 3
++3 < 4
++4 < 3
++3 < 3
++3 <= 3
++4 <= 3
++3 > 2
++2 > 3
++3 >= 3
++2 >= 3
++-1 < 0
++-5 > -3
++-2 == -2
++-2147483647 - 1 < 0
++5 > 3
++5 == 4
++2 + 3 == 5
++1 < 2 < 3
++(1 < 2) < 3
++1 == 1 == 1
++(1 == 1) == 1
++2 < 3 == 1
++-1 >= -1
++0 == 0
+diff --git c/tests/golden/comparison.out w/tests/golden/comparison.out
+new file mode 100644
+index 0000000..39f5c53
+--- /dev/null
++++ w/tests/golden/comparison.out
+@@ -0,0 +1,27 @@
++OK 1
++OK 0
++OK 1
++OK 0
++OK 1
++OK 0
++OK 0
++OK 1
++OK 0
++OK 1
++OK 0
++OK 1
++OK 0
++OK 1
++OK 0
++OK 1
++OK 1
++OK 1
++OK 0
++OK 1
++ERR ParseError 22:7
++OK 1
++ERR ParseError 24:8
++OK 1
++ERR ParseError 26:7
++OK 1
++OK 1
+diff --git c/tests/golden/demo.mc w/tests/golden/demo.mc
+new file mode 100644
+index 0000000..8700dab
+--- /dev/null
++++ w/tests/golden/demo.mc
+@@ -0,0 +1,15 @@
++# MiniCalc demo session: variables, ans, built-ins, comparisons, one error per family
++x = 7
++y = 3
++x * y + 2
++ans + x
++max(x, y) ** 2
++min(x, y) == y
++abs(-x)
++gcd(x, y)
++x = 1 / 0
++x
++2 +
++3.14
++ans
++max(abs(-10), 3)
+diff --git c/tests/golden/demo.out w/tests/golden/demo.out
+new file mode 100644
+index 0000000..07ac7b0
+--- /dev/null
++++ w/tests/golden/demo.out
+@@ -0,0 +1,14 @@
++OK x=7
++OK y=3
++OK 23
++OK 30
++OK 49
++OK 1
++OK 7
++OK 1
++ERR DivisionByZeroError 10:7
++OK 7
++ERR ParseError 12:4
++ERR LexError 13:2
++OK 7
++OK 10
+diff --git c/tests/golden/division.mc w/tests/golden/division.mc
+new file mode 100644
+index 0000000..3b135c5
+--- /dev/null
++++ w/tests/golden/division.mc
+@@ -0,0 +1,27 @@
++# Spec section 5: / truncates toward zero, // floors, % is floored modulo (all signs)
++7 / 2
++-7 / 2
++7 / -2
++-7 / -2
++7 // 2
++-7 // 2
++7 // -2
++-7 // -2
++7 % 2
++-7 % 2
++7 % -2
++-7 % -2
++0 / 5
++0 // 5
++0 % 5
++7 / 2 * 2
++-7 / 2 * 2
++7 // 2 * 2
++-7 // 2 * 2
++(-7 // 2) * 2 + (-7 % 2)
++1 / 0
++1 // 0
++1 % 0
++(-2147483647 - 1) / -1
++(-2147483647 - 1) // -1
++(-2147483647 - 1) % -1
+diff --git c/tests/golden/division.out w/tests/golden/division.out
+new file mode 100644
+index 0000000..7b25441
+--- /dev/null
++++ w/tests/golden/division.out
+@@ -0,0 +1,26 @@
++OK 3
++OK -3
++OK -3
++OK 3
++OK 3
++OK -4
++OK -4
++OK 3
++OK 1
++OK 1
++OK -1
++OK -1
++OK 0
++OK 0
++OK 0
++OK 6
++OK -6
++OK 6
++OK -8
++OK -7
++ERR DivisionByZeroError 22:3
++ERR DivisionByZeroError 23:3
++ERR DivisionByZeroError 24:3
++ERR IntegerRangeError 25:19
++ERR IntegerRangeError 26:19
++OK 0
+diff --git c/tests/golden/lex_errors.mc w/tests/golden/lex_errors.mc
+new file mode 100644
+index 0000000..9708b7b
+--- /dev/null
++++ w/tests/golden/lex_errors.mc
+@@ -0,0 +1,15 @@
++# Spec section 2: lexical errors (decimals, bad numbers, illegal chars, long line)
++3.14
++3.
++.5
++12abc
++99999999999
++12345678901234567890
++2 @ 3
++$x
++:
++3 ! 4
++!
++2 × 3
++2 “ 3
++1 + 1                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    
+diff --git c/tests/golden/lex_errors.out w/tests/golden/lex_errors.out
+new file mode 100644
+index 0000000..360b153
+--- /dev/null
++++ w/tests/golden/lex_errors.out
+@@ -0,0 +1,14 @@
++ERR LexError 2:2
++ERR LexError 3:2
++ERR LexError 4:1
++ERR LexError 5:1
++ERR LexError 6:1
++ERR LexError 7:1
++ERR LexError 8:3
++ERR LexError 9:1
++ERR LexError 10:1
++ERR LexError 11:3
++ERR LexError 12:1
++ERR LexError 13:3
++ERR LexError 14:3
++ERR LexError 15:1001
+diff --git c/tests/golden/parse_errors.mc w/tests/golden/parse_errors.mc
+new file mode 100644
+index 0000000..057fdf4
+--- /dev/null
++++ w/tests/golden/parse_errors.mc
+@@ -0,0 +1,19 @@
++# Spec section 3: parse errors (all table rows plus common extras)
++2 +
++2 + * 3
++(2 + 3
++2 3
++1 < 2 < 3
++max(1,
++)
++= 5
++5 = 3
++x = y = 3
++a + 1 = 2
++max(1 2)
++()
++2 **
++x =
++(2 + 3))
++min(1,)
++2 * (3 + 4
+diff --git c/tests/golden/parse_errors.out w/tests/golden/parse_errors.out
+new file mode 100644
+index 0000000..2db0760
+--- /dev/null
++++ w/tests/golden/parse_errors.out
+@@ -0,0 +1,18 @@
++ERR ParseError 2:4
++ERR ParseError 3:5
++ERR ParseError 4:7
++ERR ParseError 5:3
++ERR ParseError 6:7
++ERR ParseError 7:7
++ERR ParseError 8:1
++ERR ParseError 9:1
++ERR ParseError 10:3
++ERR ParseError 11:7
++ERR ParseError 12:7
++ERR ParseError 13:7
++ERR ParseError 14:2
++ERR ParseError 15:5
++ERR ParseError 16:4
++ERR ParseError 17:8
++ERR ParseError 18:7
++ERR ParseError 19:11
+diff --git c/tests/golden/power.mc w/tests/golden/power.mc
+new file mode 100644
+index 0000000..432d800
+--- /dev/null
++++ w/tests/golden/power.mc
+@@ -0,0 +1,26 @@
++# Spec section 5: ** rules (zero, one, -1, overflow, negative exponent, short-circuit)
++2 ** 3
++2 ** 0
++0 ** 0
++0 ** 5
++0 ** 31
++1 ** 1000000
++(-1) ** 1000000
++(-1) ** 1000001
++(-1) ** 0
++2 ** 30
++(-2) ** 30
++(-2) ** 31
++2 ** 31
++(-2) ** 32
++2 ** 1000000000
++2 ** -1
++1 ** -1
++0 ** -1
++2 ** 3 ** 2
++-2 ** 2
++3 ** 19
++3 ** 20
++(-3) ** 19
++(-3) ** 20
++(-2) ** 0
+diff --git c/tests/golden/power.out w/tests/golden/power.out
+new file mode 100644
+index 0000000..0638875
+--- /dev/null
++++ w/tests/golden/power.out
+@@ -0,0 +1,25 @@
++OK 8
++OK 1
++OK 1
++OK 0
++OK 0
++OK 1
++OK 1
++OK -1
++OK 1
++OK 1073741824
++OK 1073741824
++OK -2147483648
++ERR IntegerRangeError 14:3
++ERR IntegerRangeError 15:6
++ERR IntegerRangeError 16:3
++ERR DomainError 17:3
++ERR DomainError 18:3
++ERR DomainError 19:3
++OK 512
++OK -4
++OK 1162261467
++ERR IntegerRangeError 23:3
++OK -1162261467
++ERR IntegerRangeError 25:6
++OK 1
+diff --git c/tests/golden/precedence.mc w/tests/golden/precedence.mc
+new file mode 100644
+index 0000000..d316e1a
+--- /dev/null
++++ w/tests/golden/precedence.mc
+@@ -0,0 +1,24 @@
++# Spec section 3: precedence levels 1-6 and associativity
++2 + 3 * 4
++2 * 3 + 4
++2 + 3 * 4 ** 2
++2 ** 3 * 2
++2 * 3 ** 2
++(2 + 3) * 4
++100 / 10 / 2
++10 - 3 - 2
++20 // 6 // 2
++100 % 30 % 7
++2 ** 3 ** 2
++-2 ** 2
++(-2) ** 2
++2 ** -1
++--5
++-+-5
+++5
++---5
++2 ** 0 ** 5
++-2 ** 0
++2 + 3 == 5
++2 * 3 > 5
++2 + 3 < 4 * 2
+diff --git c/tests/golden/precedence.out w/tests/golden/precedence.out
+new file mode 100644
+index 0000000..b917cae
+--- /dev/null
++++ w/tests/golden/precedence.out
+@@ -0,0 +1,23 @@
++OK 14
++OK 10
++OK 50
++OK 16
++OK 18
++OK 20
++OK 5
++OK 5
++OK 1
++OK 3
++OK 512
++OK -4
++OK 4
++ERR DomainError 15:3
++OK 5
++OK 5
++OK 5
++OK -5
++OK 1
++OK -1
++OK 1
++OK 1
++OK 1
+diff --git c/tests/golden/range.mc w/tests/golden/range.mc
+new file mode 100644
+index 0000000..c235fe3
+--- /dev/null
++++ w/tests/golden/range.mc
+@@ -0,0 +1,14 @@
++# Spec sections 4-5: 32-bit boundaries and checked intermediate results
++2147483647
++2147483647 + 1
++(-2147483647 - 1) - 1
++-2147483647 - 1
++46341 * 46341
++46340 * 46340
++-(-2147483647 - 1)
++2147483648
++2147483647 + 1 - 1
++-2147483647 - 2
++2147483646 + 1
++-2147483647 - 1 + 1
++-46341 * 46341
+diff --git c/tests/golden/range.out w/tests/golden/range.out
+new file mode 100644
+index 0000000..8b2b41f
+--- /dev/null
++++ w/tests/golden/range.out
+@@ -0,0 +1,13 @@
++OK 2147483647
++ERR IntegerRangeError 3:12
++ERR IntegerRangeError 4:19
++OK -2147483648
++ERR IntegerRangeError 6:7
++OK 2147395600
++ERR IntegerRangeError 8:1
++ERR LexError 9:1
++ERR IntegerRangeError 10:12
++ERR IntegerRangeError 11:13
++OK 2147483647
++OK -2147483647
++ERR IntegerRangeError 14:8
+diff --git c/tests/golden/variables.mc w/tests/golden/variables.mc
+new file mode 100644
+index 0000000..f93a050
+--- /dev/null
++++ w/tests/golden/variables.mc
+@@ -0,0 +1,38 @@
++# Spec section 6: variables, ans, reserved names, atomic statements, case sensitivity
++ans
++x = 7
++x + 1
++ans
++x = 10
++x * 2
++ans
++y = ans + 1
++ans
++z + 1
++ans
++X = 1
++x = 2
++X
++x
++_a = 5
++_A = 6
++_a + _A
++abs = 1
++min = 1
++max = 1
++gcd = 1
++ans = 1
++x = 42
++x = 1 / 0
++x
++ans
++y = 2 +
++y
++x = 99999999999
++x
++ans
++new_var = 1 / 0
++new_var
++_ = 3
++_
++ans
+diff --git c/tests/golden/variables.out w/tests/golden/variables.out
+new file mode 100644
+index 0000000..810f670
+--- /dev/null
++++ w/tests/golden/variables.out
+@@ -0,0 +1,37 @@
++ERR UndefinedNameError 2:1
++OK x=7
++OK 8
++OK 8
++OK x=10
++OK 20
++OK 20
++OK y=21
++OK 20
++ERR UndefinedNameError 11:1
++OK 20
++OK X=1
++OK x=2
++OK 1
++OK 2
++OK _a=5
++OK _A=6
++OK 11
++ERR AssignmentError 20:1
++ERR AssignmentError 21:1
++ERR AssignmentError 22:1
++ERR AssignmentError 23:1
++ERR AssignmentError 24:1
++OK x=42
++ERR DivisionByZeroError 26:7
++OK 42
++OK 42
++ERR ParseError 29:8
++OK 21
++ERR LexError 31:5
++OK 42
++OK 42
++ERR DivisionByZeroError 34:13
++ERR UndefinedNameError 35:1
++OK _=3
++OK 3
++OK 3

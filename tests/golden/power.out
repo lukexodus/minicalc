@@ -1,0 +1,25 @@
+OK 8
+OK 1
+OK 1
+OK 0
+OK 0
+OK 1
+OK 1
+OK -1
+OK 1
+OK 1073741824
+OK 1073741824
+OK -2147483648
+ERR IntegerRangeError 14:3
+ERR IntegerRangeError 15:6
+ERR IntegerRangeError 16:3
+ERR DomainError 17:3
+ERR DomainError 18:3
+ERR DomainError 19:3
+OK 512
+OK -4
+OK 1162261467
+ERR IntegerRangeError 23:3
+OK -1162261467
+ERR IntegerRangeError 25:6
+OK 1

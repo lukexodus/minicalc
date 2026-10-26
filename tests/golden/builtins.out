@@ -1,0 +1,36 @@
+OK 5
+OK 5
+OK 0
+ERR IntegerRangeError 5:1
+OK 1
+OK 3
+OK 5
+OK -3
+OK -1
+OK 6
+OK 0
+OK 5
+OK 6
+OK 6
+OK 6
+OK 1
+OK 3
+OK 4
+OK 6
+OK 2147483647
+OK 0
+OK x=5
+ERR CallError 24:1
+ERR CallError 25:1
+ERR UndefinedNameError 26:1
+ERR UndefinedNameError 27:1
+ERR CallError 28:1
+ERR CallError 29:1
+ERR CallError 30:1
+ERR CallError 31:1
+ERR CallError 32:1
+ERR DivisionByZeroError 33:7
+ERR DivisionByZeroError 34:7
+ERR CallError 35:1
+ERR DivisionByZeroError 36:7
+ERR IntegerRangeError 37:16

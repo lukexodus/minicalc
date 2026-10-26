@@ -1,0 +1,37 @@
+ERR UndefinedNameError 2:1
+OK x=7
+OK 8
+OK 8
+OK x=10
+OK 20
+OK 20
+OK y=21
+OK 20
+ERR UndefinedNameError 11:1
+OK 20
+OK X=1
+OK x=2
+OK 1
+OK 2
+OK _a=5
+OK _A=6
+OK 11
+ERR AssignmentError 20:1
+ERR AssignmentError 21:1
+ERR AssignmentError 22:1
+ERR AssignmentError 23:1
+ERR AssignmentError 24:1
+OK x=42
+ERR DivisionByZeroError 26:7
+OK 42
+OK 42
+ERR ParseError 29:8
+OK 21
+ERR LexError 31:5
+OK 42
+OK 42
+ERR DivisionByZeroError 34:13
+ERR UndefinedNameError 35:1
+OK _=3
+OK 3
+OK 3
