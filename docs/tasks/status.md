@@ -35,7 +35,7 @@ Status: **open**
 | :--- | :--- | :--- | :--- |
 | FEAT-001 | Full lexer | `open` | Prompt: `docs/prompts/FEAT-001.md` |
 | FEAT-002 | Full parser | `open` | Prompt: `docs/prompts/FEAT-002.md`. Reserved [D-13] |
-| FEAT-003 | Evaluator, environment, built-ins | `open` | Prompt: `docs/prompts/FEAT-003.md` |
+| FEAT-003 | Evaluator, environment, built-ins | `needs-review` | Report: `docs/reports/FEAT-003-claude-code-evaluator.md`. Branch `task/FEAT-003` |
 | FEAT-004 | REPL, CLI, display | `open` | Prompt: `docs/prompts/FEAT-004.md`. Reserved [D-14] |
 | FEAT-005 | Spec-derived golden cases | `open` | Prompt: `docs/prompts/FEAT-005.md` |
 
