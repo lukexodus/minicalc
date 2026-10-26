@@ -21,7 +21,7 @@ def test_unset_ans_message() -> None:
     env = Environment()
     with pytest.raises(UndefinedNameError) as info:
         env.get("ans", POS)
-    assert str(info.value) == "ans has no value yet; evaluate a statement first"
+    assert str(info.value) == "ans has no value yet; evaluate an expression first"
     assert info.value.pos == POS
 
 

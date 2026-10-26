@@ -45,7 +45,7 @@ source line -> Lexer -> [Token] -> Parser -> AST -> Evaluator(Environment) -> in
 | :--- | :--- |
 | `docs/context/language-spec.md` | Grammar, precedence, integer model, operator semantics, errors, CLI behavior |
 | `docs/context/interface-contract.md` | Python classes, signatures, file ownership, golden-test format |
-| `docs/decisions/decision-log.md` | Locked decisions [D-01] to [D-12], reserved [D-13] to [D-16] |
+| `docs/decisions/decision-log.md` | Locked decisions [D-01] to [D-15], [D-17], and [D-18]; [D-16] reserved for DOC-003 |
 
 If code disagrees with these, the code is wrong unless a newer decision says otherwise. Report discrepancies; do not silently work around them.
 

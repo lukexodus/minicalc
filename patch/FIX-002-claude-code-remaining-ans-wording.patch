@@ -1,0 +1,70 @@
+diff --git c/minicalc/environment.py w/minicalc/environment.py
+index f817fe9..6180a53 100644
+--- c/minicalc/environment.py
++++ w/minicalc/environment.py
+@@ -1,7 +1,7 @@
+ """Variable storage and the special ``ans`` binding (CORE-003).
+ 
+ The environment is the only mutable state in the interpreter. ``ans`` is a
+-separate read-only binding updated after each successful statement; it is not
++separate read-only binding updated after each successful expression; it is not
+ part of ``variables``.
+ """
+ 
+@@ -15,7 +15,7 @@ class Environment:
+ 
+     Attributes:
+         variables: User-defined name-to-value bindings.
+-        ans: Value of the last successful statement, or ``None`` before the
++        ans: Value of the last successful expression, or ``None`` before the
+             first success.
+     """
+ 
+@@ -40,7 +40,7 @@ class Environment:
+         if name == "ans":
+             if self.ans is None:
+                 raise UndefinedNameError(
+-                    "ans has no value yet; evaluate a statement first", pos
++                    "ans has no value yet; evaluate an expression first", pos
+                 )
+             return self.ans
+         if name in self.variables:
+@@ -57,10 +57,10 @@ class Environment:
+         self.variables[name] = value
+ 
+     def record_result(self, value: int) -> None:
+-        """Record the value of a successful statement as ``ans``.
++        """Record the value of a successful expression as ``ans``.
+ 
+         Args:
+-            value: The statement's value.
++            value: The expression's value.
+         """
+         self.ans = value
+ 
+diff --git c/tests/test_environment.py w/tests/test_environment.py
+index 1ddbd32..91680ff 100644
+--- c/tests/test_environment.py
++++ w/tests/test_environment.py
+@@ -21,7 +21,7 @@ def test_unset_ans_message() -> None:
+     env = Environment()
+     with pytest.raises(UndefinedNameError) as info:
+         env.get("ans", POS)
+-    assert str(info.value) == "ans has no value yet; evaluate a statement first"
++    assert str(info.value) == "ans has no value yet; evaluate an expression first"
+     assert info.value.pos == POS
+ 
+ 
+diff --git c/tests/test_evaluator.py w/tests/test_evaluator.py
+index fed5392..ac8bb97 100644
+--- c/tests/test_evaluator.py
++++ w/tests/test_evaluator.py
+@@ -291,7 +291,7 @@ def test_unset_variable_error_at_name() -> None:
+ 
+ 
+ def test_unset_ans_error() -> None:
+-    """``ans`` is undefined before the first successful statement."""
++    """``ans`` is undefined before any successful expression."""
+     with pytest.raises(UndefinedNameError) as info:
+         evaluate(nm("ans", 2))
+     assert info.value.pos == p(2)

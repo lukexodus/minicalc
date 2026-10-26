@@ -48,6 +48,7 @@ Status: **open**
 | INT-001 | Integrate all tracks, full-suite green | `done` | Report: `docs/reports/INT-001-claude-code-integration.md`. Merged `c3a40a3`; accepted by APC audit; [D-15] logged |
 | INT-002 | Differential test and independent audit | `done` | Report: `docs/reports/INT-002-claude-code-differential-audit.md`. Merged; accepted; 5,600 comparisons + 160 state lines, zero mismatches; 3 agent mutants + 4 APC mutants detected |
 | FIX-001 | Post-integration fixes: `ans` help wording, script-mode stream order | `done` | Report: `docs/reports/FIX-001-claude-code-post-integration-fixes.md`. Merged `0b5b9b9`; accepted; [D-17] logged |
+| FIX-002 | Remaining stale `ans` wording and context-doc decision state | `needs-review` | Report: `docs/reports/FIX-002-claude-code-remaining-ans-wording.md`; [D-18] logged |
 
 ## Phase 4 — Documentation, Packaging & Release
 

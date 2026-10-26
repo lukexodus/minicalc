@@ -291,7 +291,7 @@ def test_unset_variable_error_at_name() -> None:
 
 
 def test_unset_ans_error() -> None:
-    """``ans`` is undefined before the first successful statement."""
+    """``ans`` is undefined before any successful expression."""
     with pytest.raises(UndefinedNameError) as info:
         evaluate(nm("ans", 2))
     assert info.value.pos == p(2)
