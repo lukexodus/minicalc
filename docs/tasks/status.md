@@ -19,13 +19,13 @@ Status: **done**
 
 ## Phase 1 — Shared Infrastructure & Contracts
 
-Status: **open**
+Status: **done**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
 | CORE-001 | `limits.py`, `errors.py`, `tokens.py`, `ast_nodes.py` + tests | `done` | Report: `docs/reports/CORE-001-claude-code-shared-vocabulary.md`. Merged; 42 tests pass; verified on Python 3.10 and 3.12 by APC |
 | CORE-002 | Golden-test harness | `done` | Report: `docs/reports/CORE-002-claude-code-golden-harness.md`. Merged; skip guard requires a genuinely absent interpreter |
-| CORE-003 | Walking skeleton and `Interpreter` facade | `needs-review` | Report: `docs/reports/CORE-003-claude-code-walking-skeleton.md`. 76 passed, 0 skipped; golden smoke collected |
+| CORE-003 | Walking skeleton and `Interpreter` facade | `done` | Report: `docs/reports/CORE-003-claude-code-walking-skeleton.md`. Merged; 77 passed, 0 skipped |
 
 ## Phase 2 — Parallel Feature Tracks
 
