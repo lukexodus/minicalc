@@ -1,3 +1,18 @@
-.obsidian/
+# Python caches and build artifacts
+__pycache__/
+*.pyc
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+dist/
 
+# Archives and local bundles
+*.zip
+*.tar.gz
+
+# Local editor / operator files (not part of the MiniCalc deliverable)
+.obsidian/
 artifacts/
+
+# Do NOT ignore: patch/, docs/, tests/golden/

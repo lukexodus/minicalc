@@ -1,0 +1,174 @@
+diff --git c/.gitignore w/.gitignore
+index 66e0347..b071f28 100644
+--- c/.gitignore
++++ w/.gitignore
+@@ -1,3 +1,18 @@
+-.obsidian/
++# Python caches and build artifacts
++__pycache__/
++*.pyc
++.pytest_cache/
++.venv/
++venv/
++*.egg-info/
++dist/
+ 
++# Archives and local bundles
++*.zip
++*.tar.gz
++
++# Local editor / operator files (not part of the MiniCalc deliverable)
++.obsidian/
+ artifacts/
++
++# Do NOT ignore: patch/, docs/, tests/golden/
+diff --git c/docs/context/repo-tree.txt w/docs/context/repo-tree.txt
+index dfb3b0f..45b8d1a 100644
+--- c/docs/context/repo-tree.txt
++++ w/docs/context/repo-tree.txt
+@@ -1,43 +1,55 @@
+ .
+ ├── docs
+-│   ├── context
+-│   │   ├── apc-bundle-quickref.md
+-│   │   ├── apc-handoff-template.md
+-│   │   ├── complete-context.md
+-│   │   ├── interface-contract.md
+-│   │   └── language-spec.md
+-│   ├── decisions
+-│   │   └── decision-log.md
+-│   ├── guide
+-│   │   └── COLLABORATOR-GUIDE.md
+-│   ├── prompts
+-│   │   ├── ARCH-002.md
+-│   │   ├── CORE-001.md
+-│   │   ├── CORE-002.md
+-│   │   ├── CORE-003.md
+-│   │   ├── DOC-001.md
+-│   │   ├── DOC-002.md
+-│   │   ├── DOC-003.md
+-│   │   ├── FEAT-001.md
+-│   │   ├── FEAT-002.md
+-│   │   ├── FEAT-003.md
+-│   │   ├── FEAT-004.md
+-│   │   ├── FEAT-005.md
+-│   │   ├── INT-001.md
+-│   │   ├── INT-002.md
+-│   │   ├── STANDALONE-ADOPTION-PROMPT.md
+-│   │   └── STANDALONE-PROMPT-TEMPLATE.md
+-│   ├── reports
+-│   │   └── TASK-TEMPLATE.md
+-│   └── tasks
+-│       ├── high-level-tasks.md
+-│       └── status.md
++│   ├── context
++│   │   ├── apc-bundle-quickref.md
++│   │   ├── apc-handoff-template.md
++│   │   ├── complete-context.md
++│   │   ├── Final-Project-12627-Guidelines.md
++│   │   ├── interface-contract.md
++│   │   ├── language-spec.md
++│   │   └── repo-tree.txt
++│   ├── decisions
++│   │   └── decision-log.md
++│   ├── guide
++│   │   └── COLLABORATOR-GUIDE.md
++│   ├── prompts
++│   │   ├── ARCH-002.md
++│   │   ├── CORE-001.md
++│   │   ├── CORE-002.md
++│   │   ├── CORE-003.md
++│   │   ├── DOC-001.md
++│   │   ├── DOC-002.md
++│   │   ├── DOC-003.md
++│   │   ├── FEAT-001.md
++│   │   ├── FEAT-002.md
++│   │   ├── FEAT-003.md
++│   │   ├── FEAT-004.md
++│   │   ├── FEAT-005.md
++│   │   ├── INT-001.md
++│   │   ├── INT-002.md
++│   │   ├── STANDALONE-ADOPTION-PROMPT.md
++│   │   └── STANDALONE-PROMPT-TEMPLATE.md
++│   ├── reports
++│   │   ├── ARCH-002-claude-code-bootstrap-skeleton.md
++│   │   └── TASK-TEMPLATE.md
++│   └── tasks
++│       ├── high-level-tasks.md
++│       └── status.md
++├── examples
++├── minicalc
++│   └── __init__.py
+ ├── patch
+-│   └── .gitkeep
++│   └── ARCH-002-claude-code-bootstrap-skeleton.patch
+ ├── scripts
+-│   ├── README.md
+-│   ├── apc-bundle.sh
+-│   ├── manage-decisions.py
+-│   ├── task-worktree.sh
+-│   └── validate-report.py
+-└── AGENTS.md
++│   ├── apc-bundle.sh
++│   ├── manage-decisions.py
++│   ├── README.md
++│   ├── task-worktree.sh
++│   └── validate-report.py
++├── tests
++│   ├── golden
++│   └── test_package.py
++├── AGENTS.md
++├── pytest.ini
++├── requirements-dev.txt
++└── START-HERE.md
+diff --git c/examples/.gitkeep w/examples/.gitkeep
+new file mode 100644
+index 0000000..e69de29
+diff --git c/minicalc/__init__.py w/minicalc/__init__.py
+new file mode 100644
+index 0000000..daaf0fb
+--- /dev/null
++++ w/minicalc/__init__.py
+@@ -0,0 +1,9 @@
++"""MiniCalc: a small integer-arithmetic programming language.
++
++The package is organized as a one-way pipeline: source lines flow through the
++lexer, parser, and evaluator, and are coordinated by the ``Interpreter`` facade
++in ``minicalc.interpreter``. See ``docs/context/interface-contract.md`` for the
++authoritative module map and ``docs/context/language-spec.md`` for behavior.
++"""
++
++__version__ = "1.0.0"
+diff --git c/pytest.ini w/pytest.ini
+new file mode 100644
+index 0000000..4584de7
+--- /dev/null
++++ w/pytest.ini
+@@ -0,0 +1,3 @@
++[pytest]
++testpaths = tests
++pythonpath = .
+diff --git c/requirements-dev.txt w/requirements-dev.txt
+new file mode 100644
+index 0000000..91e898f
+--- /dev/null
++++ w/requirements-dev.txt
+@@ -0,0 +1 @@
++pytest>=7
+diff --git c/tests/golden/.gitkeep w/tests/golden/.gitkeep
+new file mode 100644
+index 0000000..e69de29
+diff --git c/tests/test_package.py w/tests/test_package.py
+new file mode 100644
+index 0000000..b0ab695
+--- /dev/null
++++ w/tests/test_package.py
+@@ -0,0 +1,8 @@
++"""Package-level smoke tests for the MiniCalc bootstrap (ARCH-002)."""
++
++import minicalc
++
++
++def test_version() -> None:
++    """The package exposes the design-locked version string."""
++    assert minicalc.__version__ == "1.0.0"
