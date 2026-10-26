@@ -46,7 +46,7 @@ Status: **open**
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
 | INT-001 | Integrate all tracks, full-suite green | `needs-review` | Report: `docs/reports/INT-001-claude-code-integration.md`. 432 passed, 0 skipped on Python 3.10.16 and 3.14.8; [D-15] logged |
-| INT-002 | Differential test and independent audit | `open` | Prompt: `docs/prompts/INT-002.md` |
+| INT-002 | Differential test and independent audit | `needs-review` | Report: `docs/reports/INT-002-claude-code-differential-audit.md`. 5,600 generated comparisons + 160 state lines, zero mismatches; all 3 mutants detected |
 
 ## Phase 4 — Documentation, Packaging & Release
 
