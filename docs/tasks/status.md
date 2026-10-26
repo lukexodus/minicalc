@@ -34,7 +34,7 @@ Status: **open**
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
 | FEAT-001 | Full lexer | `open` | Prompt: `docs/prompts/FEAT-001.md` |
-| FEAT-002 | Full parser | `open` | Prompt: `docs/prompts/FEAT-002.md`. Reserved [D-13] |
+| FEAT-002 | Full parser | `needs-review` | Report: `docs/reports/FEAT-002-claude-code-parser.md`. Reserved [D-13] logged |
 | FEAT-003 | Evaluator, environment, built-ins | `open` | Prompt: `docs/prompts/FEAT-003.md` |
 | FEAT-004 | REPL, CLI, display | `open` | Prompt: `docs/prompts/FEAT-004.md`. Reserved [D-14] |
 | FEAT-005 | Spec-derived golden cases | `open` | Prompt: `docs/prompts/FEAT-005.md` |

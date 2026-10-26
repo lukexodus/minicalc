@@ -87,11 +87,19 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** Graders need a clean, runnable, documented source tree, not orchestration artifacts. Verified unzip-and-run removes the largest delivery risk.  
 - **Affects:** DOC-003.
 
-**[D-13]** RESERVED for FEAT-002: parser error-message wording conventions.  
-- **Date / Session:** reserved 2026-10-26  
-- **Decision:** (to be written by the agent running FEAT-002)  
-- **Reasoning:** (to be written)  
-- **Affects:** (to be written)
+**[D-13]** Parser error-message wording conventions (FEAT-002).  
+- **Date / Session:** 2026-10-26, FEAT-002 implementation (Claude Code)  
+- **Decision:** Messages are lowercase and name what was expected and what was found, using the token's quoted lexeme or `end of line` for `EOF`. The settled templates, one per line:
+  - `expected an expression, found <token>`
+  - `expected ')', found <token>`
+  - `expected ',' or ')', found <token>`
+  - `expected end of line, found <token>`
+  - `comparison operators cannot be chained; add parentheses`
+  - `left side of '=' must be a name`
+  - `chained assignment is not supported`
+  - `expression is nested too deeply`
+- **Reasoning:** One consistent "expected/found" shape makes diagnostics predictable and actionable; naming the lexeme lets users see the exact offending punctuation. The two assignment rules are distinct messages because they diagnose different mistakes (a non-name left side vs. a second assignment). Golden tests compare class and position only ([D-07]), so wording stays free to improve.  
+- **Affects:** `parser.py`, FEAT-004 (display of parser errors), DOC-002 (language documentation), FEAT-005 (golden cases).
 
 **[D-14]** RESERVED for FEAT-004: any REPL/display behavior not fixed by the spec.  
 - **Date / Session:** reserved 2026-10-26  
