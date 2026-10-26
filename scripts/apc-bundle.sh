@@ -99,6 +99,13 @@ is_secret_or_forbidden() {
   # Forbidden sensitive keywords anywhere in the path
   case "$lower_p" in
   *secret* | *token* | *credential* | *id_rsa* | *password*)
+    # Project source whose name merely contains "token": the lexer's token
+    # type definitions, not a credential.
+    case "$p" in
+    minicalc/tokens.py | tests/test_tokens.py | tests/test_vocabulary.py)
+      return 1
+      ;;
+    esac
     return 0
     ;;
   esac
