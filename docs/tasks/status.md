@@ -24,7 +24,7 @@ Status: **open**
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
 | CORE-001 | `limits.py`, `errors.py`, `tokens.py`, `ast_nodes.py` + tests | `done` | Report: `docs/reports/CORE-001-claude-code-shared-vocabulary.md`. Merged; 42 tests pass; verified on Python 3.10 and 3.12 by APC |
-| CORE-002 | Golden-test harness | `needs-review` | Report: `docs/reports/CORE-002-claude-code-golden-harness.md`. 59 passed, 1 expected skip |
+| CORE-002 | Golden-test harness | `done` | Report: `docs/reports/CORE-002-claude-code-golden-harness.md`. Merged; skip guard requires a genuinely absent interpreter |
 | CORE-003 | Walking skeleton and `Interpreter` facade | `open` | Prompt: `docs/prompts/CORE-003.md`. Exit gate for Phase 1 |
 
 ## Phase 2 — Parallel Feature Tracks
