@@ -1,43 +1,55 @@
 .
 ├── docs
-│   ├── context
-│   │   ├── apc-bundle-quickref.md
-│   │   ├── apc-handoff-template.md
-│   │   ├── complete-context.md
-│   │   ├── interface-contract.md
-│   │   └── language-spec.md
-│   ├── decisions
-│   │   └── decision-log.md
-│   ├── guide
-│   │   └── COLLABORATOR-GUIDE.md
-│   ├── prompts
-│   │   ├── ARCH-002.md
-│   │   ├── CORE-001.md
-│   │   ├── CORE-002.md
-│   │   ├── CORE-003.md
-│   │   ├── DOC-001.md
-│   │   ├── DOC-002.md
-│   │   ├── DOC-003.md
-│   │   ├── FEAT-001.md
-│   │   ├── FEAT-002.md
-│   │   ├── FEAT-003.md
-│   │   ├── FEAT-004.md
-│   │   ├── FEAT-005.md
-│   │   ├── INT-001.md
-│   │   ├── INT-002.md
-│   │   ├── STANDALONE-ADOPTION-PROMPT.md
-│   │   └── STANDALONE-PROMPT-TEMPLATE.md
-│   ├── reports
-│   │   └── TASK-TEMPLATE.md
-│   └── tasks
-│       ├── high-level-tasks.md
-│       └── status.md
+│   ├── context
+│   │   ├── apc-bundle-quickref.md
+│   │   ├── apc-handoff-template.md
+│   │   ├── complete-context.md
+│   │   ├── Final-Project-12627-Guidelines.md
+│   │   ├── interface-contract.md
+│   │   ├── language-spec.md
+│   │   └── repo-tree.txt
+│   ├── decisions
+│   │   └── decision-log.md
+│   ├── guide
+│   │   └── COLLABORATOR-GUIDE.md
+│   ├── prompts
+│   │   ├── ARCH-002.md
+│   │   ├── CORE-001.md
+│   │   ├── CORE-002.md
+│   │   ├── CORE-003.md
+│   │   ├── DOC-001.md
+│   │   ├── DOC-002.md
+│   │   ├── DOC-003.md
+│   │   ├── FEAT-001.md
+│   │   ├── FEAT-002.md
+│   │   ├── FEAT-003.md
+│   │   ├── FEAT-004.md
+│   │   ├── FEAT-005.md
+│   │   ├── INT-001.md
+│   │   ├── INT-002.md
+│   │   ├── STANDALONE-ADOPTION-PROMPT.md
+│   │   └── STANDALONE-PROMPT-TEMPLATE.md
+│   ├── reports
+│   │   ├── ARCH-002-claude-code-bootstrap-skeleton.md
+│   │   └── TASK-TEMPLATE.md
+│   └── tasks
+│       ├── high-level-tasks.md
+│       └── status.md
+├── examples
+├── minicalc
+│   └── __init__.py
 ├── patch
-│   └── .gitkeep
+│   └── ARCH-002-claude-code-bootstrap-skeleton.patch
 ├── scripts
-│   ├── README.md
-│   ├── apc-bundle.sh
-│   ├── manage-decisions.py
-│   ├── task-worktree.sh
-│   └── validate-report.py
-└── AGENTS.md
+│   ├── apc-bundle.sh
+│   ├── manage-decisions.py
+│   ├── README.md
+│   ├── task-worktree.sh
+│   └── validate-report.py
+├── tests
+│   ├── golden
+│   └── test_package.py
+├── AGENTS.md
+├── pytest.ini
+├── requirements-dev.txt
+└── START-HERE.md

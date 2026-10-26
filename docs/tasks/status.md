@@ -15,7 +15,7 @@ Status: **in progress**
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
 | ARCH-001 | Design lock: spec, interface contract, decisions D-01..D-12, roadmap, prompts | `needs-review` | Delivered by APC AI in the seed pack. lukexodus reviews, then marks `done`. No agent report required |
-| ARCH-002 | Repo bootstrap, package skeleton, pytest config, first commit | `open` | Prompt: `docs/prompts/ARCH-002.md` |
+| ARCH-002 | Repo bootstrap, package skeleton, pytest config, first commit | `needs-review` | Report: `docs/reports/ARCH-002-claude-code-bootstrap-skeleton.md`. All tooling checks pass on Python 3.14.8 / pytest 9.1.1 |
 
 ## Phase 1 — Shared Infrastructure & Contracts
 
