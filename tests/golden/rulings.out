@@ -1,0 +1,11 @@
+ERR LexError 2:3
+OK 0
+ERR DomainError 4:3
+ERR DomainError 5:3
+ERR IntegerRangeError 6:1
+ERR IntegerRangeError 7:1
+OK 14
+OK x=7
+OK 98
+ERR AssignmentError 11:1
+ERR AssignmentError 12:1

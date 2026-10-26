@@ -1,26 +1,4 @@
 .
-├── artifacts
-│   ├── ARCH-002-claude-code-bootstrap-skeleton.md
-│   ├── ARCH-002-claude-code-bootstrap-skeleton.patch
-│   ├── CORE-001-claude-code-shared-vocabulary.md
-│   ├── CORE-001-claude-code-shared-vocabulary.patch
-│   ├── CORE-002-claude-code-golden-harness.md
-│   ├── CORE-002-claude-code-golden-harness.patch
-│   ├── CORE-003-claude-code-walking-skeleton.md
-│   ├── CORE-003-claude-code-walking-skeleton.patch
-│   ├── FEAT-001-claude-code-lexer.md
-│   ├── FEAT-001-claude-code-lexer.patch
-│   ├── FEAT-002-claude-code-parser.md
-│   ├── FEAT-002-claude-code-parser.patch
-│   ├── FEAT-003-claude-code-evaluator.md
-│   ├── FEAT-003-claude-code-evaluator.patch
-│   ├── FEAT-004-claude-code-repl-cli.md
-│   ├── FEAT-004-claude-code-repl-cli.patch
-│   ├── FEAT-005-golden-cases.md
-│   ├── FEAT-005-golden-cases.patch
-│   ├── high-level-tasks.md
-│   ├── minicalc-apc-seed.zip
-│   └── TASK-TEMPLATE.md
 ├── docs
 │   ├── context
 │   │   ├── apc-bundle-quickref.md
@@ -61,6 +39,7 @@
 │   │   ├── FEAT-003-claude-code-evaluator.md
 │   │   ├── FEAT-004-claude-code-repl-cli.md
 │   │   ├── FEAT-005-golden-cases.md
+│   │   ├── INT-001-claude-code-integration.md
 │   │   └── TASK-TEMPLATE.md
 │   └── tasks
 │       ├── high-level-tasks.md
@@ -90,7 +69,8 @@
 │   ├── FEAT-002-claude-code-parser.patch
 │   ├── FEAT-003-claude-code-evaluator.patch
 │   ├── FEAT-004-claude-code-repl-cli.patch
-│   └── FEAT-005-golden-cases.patch
+│   ├── FEAT-005-golden-cases.patch
+│   └── INT-001-claude-code-integration.patch
 ├── scripts
 │   ├── apc-bundle.sh
 │   ├── manage-decisions.py
@@ -121,6 +101,8 @@
 │   │   ├── precedence.out
 │   │   ├── range.mc
 │   │   ├── range.out
+│   │   ├── rulings.mc
+│   │   ├── rulings.out
 │   │   ├── smoke.mc
 │   │   ├── smoke.out
 │   │   ├── variables.mc

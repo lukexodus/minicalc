@@ -45,7 +45,7 @@ Status: **open**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
-| INT-001 | Integrate all tracks, full-suite green | `open` | Prompt: `docs/prompts/INT-001.md`. Reserved [D-15] |
+| INT-001 | Integrate all tracks, full-suite green | `needs-review` | Report: `docs/reports/INT-001-claude-code-integration.md`. 432 passed, 0 skipped on Python 3.10.16 and 3.14.8; [D-15] logged |
 | INT-002 | Differential test and independent audit | `open` | Prompt: `docs/prompts/INT-002.md` |
 
 ## Phase 4 — Documentation, Packaging & Release

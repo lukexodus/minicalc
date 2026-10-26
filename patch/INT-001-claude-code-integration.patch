@@ -1,0 +1,35 @@
+diff --git c/tests/golden/rulings.mc w/tests/golden/rulings.mc
+new file mode 100644
+index 0000000..575fc31
+--- /dev/null
++++ w/tests/golden/rulings.mc
+@@ -0,0 +1,12 @@
++# Phase 2 rulings recorded in [D-15]; expectations written from the spec text
++12é
++(-2147483647 - 1) % -1
++1 ** -1
++0 ** -1
++gcd(-2147483647 - 1, 0)
++gcd(-2147483647 - 1, -2147483647 - 1)
++2 + 3 * 4
++x = 7
++ans * x
++ans = 1 / 0
++abs = 1 / 0
+diff --git c/tests/golden/rulings.out w/tests/golden/rulings.out
+new file mode 100644
+index 0000000..ed6e291
+--- /dev/null
++++ w/tests/golden/rulings.out
+@@ -0,0 +1,11 @@
++ERR LexError 2:3
++OK 0
++ERR DomainError 4:3
++ERR DomainError 5:3
++ERR IntegerRangeError 6:1
++ERR IntegerRangeError 7:1
++OK 14
++OK x=7
++OK 98
++ERR AssignmentError 11:1
++ERR AssignmentError 12:1

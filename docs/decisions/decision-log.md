@@ -115,11 +115,20 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** The spec and contract fix behavior but not exact wording, column widths, or the handling of unexpected exceptions; these choices keep output aligned, ASCII-safe, deterministic, and testable without touching the facade.  
 - **Affects:** `minicalc/display.py`, `minicalc/repl.py`, `minicalc/__main__.py`, `main.py`, `tests/test_display.py`, `tests/test_cli.py`.
 
-**[D-15]** RESERVED for INT-001: resolution of cross-stage discrepancies found during integration.  
-- **Date / Session:** reserved 2026-10-26  
-- **Decision:** (to be written by the agent running INT-001)  
-- **Reasoning:** (to be written)  
-- **Affects:** (to be written)
+**[D-15]** Cross-stage discrepancies resolved during integration (INT-001).  
+- **Date / Session:** 2026-10-26, INT-001 integration session  
+- **Decision:** These rulings settle every seam discrepancy found between the merged tracks. The spec edit recording them is commit `44cd2c2` (`docs(spec): record Phase 2 rulings ...`), and `tests/golden/rulings.mc`/`.out` pins them (expectations written from the spec text before the code was run).  
+  1. **`ans` and assignments.** `ans` changes only on a successful *expression*. A successful assignment binds its variable and returns `kind="assign"` but leaves `ans` unchanged. This **supersedes** the "unset until the first successful statement" wording in [D-08] and the older spec section 6 text. Reason: the section 1 and interface-contract section 12 examples (`2 + 3 * 4`, `x = 7`, `ans * x` gives `98`) only hold this way. Found by FEAT-005. Affects `minicalc/interpreter.py` (commit `7bff102`).  
+  2. **`12é`.** Only an ASCII letter or `_` directly after digits triggers the "letter after digits" error at the start of the number. Any non-ASCII character is an ordinary illegal character at its own column, so `12é` is `LexError 1:3`. Spec section 2 now says "ASCII letter or `_`" and adds a `12é` row.  
+  3. **`INT_MIN % -1`** is `0` (the result is in range, unlike `INT_MIN / -1`). Spec section 5 `%` row updated.  
+  4. **Negative exponent** is a `DomainError` for every base, including `0` and `1`; that check precedes the `**` special cases. Spec section 5 updated.  
+  5. **Reserved assignment target.** The reserved-name check runs before the right side is evaluated, so `ans = 1 / 0` and `abs = 1 / 0` are `AssignmentError 1:1`, not `DivisionByZeroError`. Spec section 6 updated.  
+  6. **`gcd(INT_MIN, 0)` and `gcd(INT_MIN, INT_MIN)`** are `IntegerRangeError` at the call (the true result, 2147483648, is out of range). Spec section 6 built-in table updated.  
+  7. **Parenthesis nesting boundary, measured on disk** with the real parser: 199 nested parentheses evaluate; 200 is `ParseError 1:201` (`parser.MAX_DEPTH = 200`). Through the facade the recursion-limit fallback never fires first; [D-13]'s limit remains unchanged.  
+  8. **Script-mode line prefixes.** Spec section 8's "prefixed by the line number" is satisfied by `render()` naming the line ("at line N, column M") plus `line N: ` prefixes on results, per [D-14]. Script-mode errors go to stderr, so a caller that merges stdout and stderr may see error blocks before earlier results; this is a stream-buffering artifact of the [D-14] split, not a behavior mismatch. No code change.  
+  9. **No further discrepancies.** Every worked example and every error row in spec sections 2, 3, and 5 reproduces exactly (class and `line:col`), and all public signatures in `interface-contract.md` matched through `inspect.signature`.  
+- **Reasoning:** The spec is the arbiter; these are the questions the merged tracks answered differently or left open. Pinning each in both the spec and a golden file means a future regression shows up as a failing case rather than a rediscovered ambiguity.  
+- **Affects:** `docs/context/language-spec.md`, `tests/golden/rulings.mc`, `tests/golden/rulings.out`, `minicalc/interpreter.py`, DOC-002 (must document rulings 1–7).
 
 **[D-16]** RESERVED for DOC-003: final submission checklist outcomes and any cut-line decisions.  
 - **Date / Session:** reserved 2026-10-26  
