@@ -4,7 +4,7 @@ Live tracker. The plan lives in `docs/tasks/high-level-tasks.md`. Update your ow
 
 **Status values:** `open`, `in-progress` (note agent/branch), `blocked` (state the blocker), `needs-review` (waiting for APC / lukexodus), `done` (must link the report).
 
-Last updated: 2026-10-26 (APC planning session 1).
+Last updated: 2026-10-30 (all phases complete).
 
 ---
 
@@ -41,7 +41,7 @@ Status: **done**
 
 ## Phase 3 — Integration & Verification
 
-Status: **open**
+Status: **done**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
@@ -52,10 +52,10 @@ Status: **open**
 
 ## Phase 4 — Documentation, Packaging & Release
 
-Status: **open**
+Status: **done**
 
 | ID | Task | Status | Notes / Report |
 | :--- | :--- | :--- | :--- |
 | DOC-001 | Class `Attributes:` docstrings and `check_docs.py` | `done` | Report: `docs/reports/DOC-001-opencode-class-docs.md`. Checker reports 0 violations on the merged tree (28 classes, 29 functions); 457 tests pass (439 pre-existing unchanged + 18 new). Merged `948013a` (PR #1) |
-| DOC-002 | README, LANGUAGE.md, examples, presentation notes | `needs-review` | Report: `docs/reports/DOC-002-gemini-user-docs.md` |
-| DOC-003 | Submission ZIP builder and verified delivery | `needs-review` | Report: `docs/reports/DOC-003-gemini-submission.md` |
+| DOC-002 | README, LANGUAGE.md, examples, presentation notes | `done` | Report: `docs/reports/DOC-002-gemini-user-docs.md`. Merged to master; all documentation, examples, and presentation notes complete |
+| DOC-003 | Submission ZIP builder and verified delivery | `done` | Report: `docs/reports/DOC-003-gemini-submission.md`. Merged to master; all 6 verification checks pass; [D-16] logged |
