@@ -1,0 +1,934 @@
+diff --git a/README.md b/README.md
+new file mode 100644
+index 0000000..2142c22
+--- /dev/null
++++ b/README.md
+@@ -0,0 +1,212 @@
++# MiniCalc
++
++MiniCalc is a line-oriented programming language designed for integer arithmetic, developed as the final project for **CMPSC 132: Programming Languages**. Written in Python 3.10+ using only the standard library, MiniCalc implements a full language execution pipeline consisting of a hand-written lexical scanner, a precedence-aware recursive-descent parser, an Abstract Syntax Tree (AST) evaluator with checked 32-bit signed arithmetic, and an interactive Read-Eval-Print Loop (REPL). It combines robust error diagnostics with visual caret formatting, transactional statement execution, and zero runtime dependencies.
++
++For the full specification and language manual, see the [Language Reference](docs/LANGUAGE.md). For presentation notes and demo scripts, see [Presentation Notes](docs/PRESENTATION.md).
++
++---
++
++## Requirements
++
++- **Runtime:** Python 3.10 or higher.
++- **Dependencies:** None. MiniCalc relies strictly on Python's standard library at runtime.
++- **Development & Testing:** `pytest` (listed in `requirements-dev.txt`).
++
++---
++
++## Quick Start
++
++MiniCalc supports three primary execution modes: interactive REPL, script file execution, and one-shot expression evaluation. You can launch MiniCalc either as an installed module (`python -m minicalc`) or through the root shim script (`python main.py`).
++
++### 1. Interactive REPL
++Start the interactive shell:
++```bash
++python -m minicalc
++# or:
++python main.py
++```
++
++### 2. Script File Execution
++Execute a MiniCalc script file (`.mc`):
++```bash
++python -m minicalc examples/01_basics.mc
++# or:
++python main.py examples/06_showcase.mc
++```
++
++### 3. One-Shot Expression Mode
++Evaluate a single expression from the command line:
++```bash
++python -m minicalc -e "2 + 3 * 4"
++# Output:
++# = 14
++```
++
++### Command-Line Options
++MiniCalc provides standard command-line flags:
++- `-e EXPR`, `--expr EXPR`: Evaluate a single expression and terminate.
++- `--no-color`: Disable ANSI color escape codes (also automatically disabled when output is redirected or when `NO_COLOR` environment variable is set).
++- `--version`: Display the version string (`MiniCalc 1.0.0`) and exit.
++- `-h`, `--help`: Display the command-line usage summary.
++
++---
++
++## Exit Codes
++
++MiniCalc returns deterministic process exit codes:
++- `0`: Success. All statements executed cleanly.
++- `1`: Language error. At least one MiniCalc error (lexical, syntax, or runtime) occurred during script execution or one-shot evaluation.
++- `2`: Command-line usage or I/O error (such as an invalid flag or an unreadable file).
++
++---
++
++## Interactive REPL Transcript
++
++Below is a verbatim interactive session transcript captured using MiniCalc's REPL driver:
++
++```text
++--------------------------------------------
++MiniCalc 1.0  integer arithmetic language
++Type :help for help, :quit to exit.
++--------------------------------------------
++minicalc> 2 + 3 * 4
++= 14
++minicalc> x = 7
++x = 7
++minicalc> ans * x
++= 98
++minicalc> abs(-42) + max(10, 20)
++= 62
++minicalc> gcd(48, 18)
++= 6
++minicalc> :vars
++ans = 6
++x   = 7
++minicalc> :quit
++```
++
++Within the REPL, several meta-commands are available:
++- `:help` — View available operators, built-in functions, and command usage.
++- `:vars` — List currently defined variables and `ans`.
++- `:clear` — Clear all user-defined variables (`ans` is preserved).
++- `:quit` or `:q` — Terminate the interactive session cleanly (also exited via `Ctrl-D` / `Ctrl-C`).
++
++---
++
++## Features
++
++- **Line-Oriented Syntax:** One statement per line with support for inline comments beginning with `#`.
++- **Checked 32-Bit Integer Arithmetic:** Operates strictly within signed 32-bit limits (`-2,147,483,648` to `2,147,483,647`). Any overflow raises an `IntegerRangeError` rather than silently wrapping or expanding unbounded.
++- **Rich Operator Suite:** Addition (`+`), subtraction (`-`), multiplication (`*`), truncating division (`/`), floor division (`//`), floored modulo (`%`), and right-associative exponentiation (`**`).
++- **Relational Comparisons:** Non-chainable comparison operators (`==`, `!=`, `<`, `<=`, `>`, `>=`) returning `1` for true and `0` for false.
++- **Variables & `ans`:** Case-sensitive identifiers with variable assignment (`var = expr`). The special keyword `ans` automatically tracks the result of the most recent successful expression.
++- **Built-in Functions:** Built-in mathematical functions `abs(x)`, `min(a, b, ...)`, `max(a, b, ...)`, and `gcd(a, b)`.
++- **Atomic Statement Semantics:** Statements are executed transactionally. If an error occurs during evaluation, variable assignments are rolled back and `ans` remains unchanged.
++- **Accurate Diagnostic Carets:** Informative multi-line error messages with precise 1-based line and column pointers.
++
++---
++
++## Error Handling
++
++MiniCalc detects and reports eight distinct classes of errors across the compilation and execution pipeline. Every error displays the source line and points an alignment caret (`^`) directly under the offending token.
++
++### Syntax Error Example
++```text
++minicalc> 2 + * 3
++Error: Syntax error at line 1, column 5: expected an expression, found '*'
++  2 + * 3
++      ^
++```
++
++### Runtime Error Example
++```text
++minicalc> 10 / 0
++Error: Runtime error at line 1, column 4: division by zero
++  10 / 0
++     ^
++```
++
++In script mode, execution continues following an error so that all errors in a file can be inspected, exiting with status code `1` upon completion.
++
++---
++
++## Project Structure
++
++```text
++.
++├── docs/
++│   ├── context/
++│   │   ├── interface-contract.md   # Python module and class interface contracts
++│   │   └── language-spec.md        # Authoritative language specification
++│   ├── LANGUAGE.md                 # Complete MiniCalc language reference & design evaluation
++│   └── PRESENTATION.md             # Project presentation plan, demo script & Q&A
++├── examples/
++│   ├── 01_basics.mc                # Basic arithmetic, comments, and line orientation
++│   ├── 02_precedence.mc            # Operator precedence, associativity, and comparisons
++│   ├── 03_variables.mc             # Variables, assignment, and ans behavior
++│   ├── 04_builtins.mc              # Built-in mathematical functions (abs, min, max, gcd)
++│   ├── 05_errors.mc                # Catalog of all 8 error families (exits with code 1)
++│   └── 06_showcase.mc              # Real-world computations: compound interest, gcd, powers
++├── minicalc/
++│   ├── __init__.py                 # Package version definition
++│   ├── __main__.py                 # CLI entry point, argument parsing, and stream routing
++│   ├── ast_nodes.py                # Frozen dataclass AST node definitions
++│   ├── builtins.py                 # Mathematical built-in function handlers
++│   ├── display.py                  # Terminal output formatting, banners, and ANSI color logic
++│   ├── environment.py              # Symbol table environment for variables and ans
++│   ├── errors.py                   # MiniCalcError hierarchy and visual caret rendering
++│   ├── evaluator.py                # Tree-walking AST evaluator with checked 32-bit arithmetic
++│   ├── interpreter.py              # Pipeline facade coordinating lexer, parser, and evaluator
++│   ├── lexer.py                    # Hand-written regular lexical scanner
++│   ├── limits.py                   # 32-bit integer boundaries and line limits
++│   ├── parser.py                   # Precedence-aware recursive-descent parser
++│   ├── repl.py                     # Interactive REPL loop and meta-command processor
++│   └── tokens.py                   # Token types and token representations
++├── scripts/check_docs.py           # Documentation and class variable docstring validator
++├── tests/
++│   ├── golden/                     # Golden test programs (*.mc) and expected outputs (*.out)
++│   ├── conftest.py                 # Pytest fixtures and test discovery configuration
++│   ├── golden_format.py            # Golden file format serializer and parser
++│   ├── oracle.py                   # Independent differential testing oracle
++│   ├── test_builtins.py            # Unit tests for built-in functions
++│   ├── test_check_docs.py          # Unit tests for documentation checker script
++│   ├── test_cli.py                 # Integration tests for CLI arguments and REPL
++│   ├── test_differential.py       # Randomized differential tests against independent oracle
++│   ├── test_display.py             # Unit tests for display formatting and ANSI styling
++│   ├── test_environment.py         # Unit tests for variable storage and ans tracking
++│   ├── test_errors.py              # Unit tests for error hierarchy and caret rendering
++│   ├── test_evaluator.py           # Unit tests for AST evaluator and checked arithmetic
++│   ├── test_golden.py              # Test suite running all golden test programs
++│   ├── test_golden_format.py       # Unit tests for golden output serialization
++│   ├── test_interpreter.py         # Unit tests for interpreter facade coordination
++│   ├── test_lexer.py               # Unit tests for lexical scanner
++│   ├── test_package.py             # Tests for package exports and versioning
++│   ├── test_parser.py              # Unit tests for recursive-descent parser
++│   └── test_vocabulary.py          # Unit tests for AST nodes, tokens, and bounds
++├── main.py                         # Root entry point shim (python main.py)
++├── pytest.ini                      # Pytest suite configuration
++├── README.md                       # Project overview, quick start, and documentation manual
++└── requirements-dev.txt            # Development dependencies (pytest)
++```
++
++---
++
++## Running Tests
++
++MiniCalc features an extensive automated test suite including unit tests, golden input/output tests, and randomized differential testing against an independent oracle.
++
++1. **Install Test Dependencies:**
++   ```bash
++   pip install -r requirements-dev.txt
++   ```
++
++2. **Execute Full Test Suite:**
++   ```bash
++   pytest -q
++   ```
++
++3. **Verify Documentation Coverage:**
++   MiniCalc includes an automated validator enforcing comprehensive class and function docstrings:
++   ```bash
++   python scripts/check_docs.py
++   ```
+diff --git a/docs/LANGUAGE.md b/docs/LANGUAGE.md
+new file mode 100644
+index 0000000..639c800
+--- /dev/null
++++ b/docs/LANGUAGE.md
+@@ -0,0 +1,335 @@
++# MiniCalc Language Reference
++
++MiniCalc is a line-oriented, statically bounded integer arithmetic language designed for CMPSC 132 (Programming Languages). This document serves as the complete reference for the language's lexical conventions, syntax grammar, operator semantics, runtime model, diagnostic errors, and architectural design evaluations.
++
++For module interfaces and implementation contracts, refer to the companion documents [Language Specification](context/language-spec.md) and [Interface Contract](context/interface-contract.md).
++
++---
++
++## 1. Lexical Conventions
++
++MiniCalc processes source input line by line. Source files typically use the `.mc` extension and must be UTF-8 encoded.
++
++### 1.1 Tokens
++
++The language recognizes the following token classes:
++
++| Token Name | Source Pattern | Description |
++| :--- | :--- | :--- |
++| `NUMBER` | `[0-9]+` | Non-negative decimal integer literals (range `0` to `2147483647`). |
++| `IDENT` | `[A-Za-z_][A-Za-z0-9_]*` | Case-sensitive variable identifiers and built-in function names. |
++| Arithmetic Ops | `+`, `-`, `*`, `/`, `//`, `%`, `**` | Arithmetic operators. Longest-match rule applies: `**` before `*`, `//` before `/`. |
++| Relational Ops | `==`, `!=`, `<`, `<=`, `>`, `>=` | Comparison operators. Longest-match rule applies: `==` before `=`. |
++| `ASSIGN` | `=` | Variable assignment operator. |
++| Delimiters | `(`, `)`, `,` | Grouping parentheses and function argument separators. |
++| `EOF` | End-of-line | Implicit terminator emitted at the end of every line (column `len(line) + 1`). |
++
++### 1.2 Whitespace and Comments
++- Whitespace characters (ASCII spaces, tabs, and carriage returns `\r`) serve solely to separate adjacent tokens and are otherwise discarded. Windows-style CRLF and Unix LF line endings are supported seamlessly.
++- Comments begin with `#` and continue to the end of the line.
++- Source line and column numbers are 1-based. Each tab character counts as a single column.
++- MiniCalc strictly requires ASCII characters for all code tokens. Any non-ASCII character (such as curly quotes or accented letters) triggers an immediate lexical error at the offending column.
++
++---
++
++## 2. Grammar (EBNF)
++
++MiniCalc expressions and statements are defined by the following Extended Backus-Naur Form (EBNF) grammar. In this specification, `[ ... ]` denotes optional constructs and `{ ... }` denotes zero or more repetitions.
++
++```ebnf
++line        = [ statement ] EOF ;
++statement   = assignment | expression ;
++assignment  = IDENT ASSIGN expression ;
++expression  = additive [ compare_op additive ] ;      (* comparisons are non-associative *)
++compare_op  = EQ | NE | LT | LE | GT | GE ;
++additive    = term { ( PLUS | MINUS ) term } ;
++term        = unary { ( STAR | SLASH | DSLASH | PERCENT ) unary } ;
++unary       = ( MINUS | PLUS ) unary | power ;
++power       = primary [ POW unary ] ;                 (* right-associative *)
++primary     = NUMBER | IDENT | call | LPAREN expression RPAREN ;
++call        = IDENT LPAREN [ expression { COMMA expression } ] RPAREN ;
++```
++
++A line containing only whitespace or comments yields an empty statement. A line is classified as an assignment if its first two tokens are `IDENT ASSIGN`.
++
++---
++
++## 3. Operator Precedence and Associativity
++
++Operators are evaluated in order of priority from highest (Level 1) to lowest (Level 6):
++
++| Level | Operators | Associativity | Description |
++| :---: | :--- | :---: | :--- |
++| **1** | `( )`, function calls | N/A | Grouping parentheses and function invocation |
++| **2** | `**` | Right | Exponentiation (e.g., `2 ** 3 ** 2` is `2 ** (3 ** 2) = 512`) |
++| **3** | `+`, `-` (unary) | Right (prefix) | Unary positive identity and negation |
++| **4** | `*`, `/`, `//`, `%` | Left | Multiplication, truncating division, floor division, modulo |
++| **5** | `+`, `-` (binary) | Left | Binary addition and subtraction |
++| **6** | `==`, `!=`, `<`, `<=`, `>`, `>=` | None | Relational comparisons (cannot be chained without parentheses) |
++
++### Key Precedence Implications
++- **Exponentiation vs. Unary Minus:** Because `**` has higher precedence than unary `-`, an expression such as `-2 ** 2` parses as `-(2 ** 2)` and evaluates to `-4`. To square negative two, explicit grouping is required: `(-2) ** 2 == 4`.
++- **Non-Chaining Comparisons:** Relational operators cannot be chained. Writing `1 < 2 < 3` results in a syntax error; it must be written using parentheses or decomposed into explicit sub-expressions.
++
++---
++
++## 4. Integer Model and Checked Arithmetic
++
++MiniCalc values are strictly **signed 32-bit integers**:
++$$\text{INT\_MIN} = -2,147,483,648 \quad (-2^{31})$$
++$$\text{INT\_MAX} = 2,147,483,647 \quad (2^{31} - 1)$$
++
++### Why 32-Bit Checked Arithmetic?
++Standard Python integers feature arbitrary precision, which silently hides algorithmic overflow and can cause runaway CPU and memory consumption. MiniCalc enforces explicit signed 32-bit bounds on **every** intermediate and final calculation:
++- If any operation computes a value outside $[-2,147,483,648, 2,147,483,647]$, an `IntegerRangeError` is raised immediately.
++- Arithmetic never silently overflows or wraps around modulo $2^{32}$.
++- Integer literals are non-negative; `-5` is parsed as unary negation applied to the literal `5`.
++- Because the maximum literal value is $2,147,483,647$, the boundary value `INT_MIN` cannot be entered as a positive literal. In accordance with standard C conventions, it is written as `-2147483647 - 1`.
++- Boolean types do not exist; comparison operators yield integer `1` (true) or `0` (false).
++
++---
++
++## 5. Operator Semantics
++
++MiniCalc provides comprehensive arithmetic and comparison operators:
++
++| Operator | Syntax | Semantics | Error Conditions |
++| :--- | :--- | :--- | :--- |
++| **Addition** | `a + b` | Standard addition | `IntegerRangeError` on overflow |
++| **Subtraction** | `a - b` | Standard subtraction | `IntegerRangeError` on overflow |
++| **Multiplication** | `a * b` | Standard multiplication | `IntegerRangeError` on overflow |
++| **Truncating Division** | `a / b` | Integer division truncated toward zero (C-style) | `DivisionByZeroError` if $b=0$; `IntegerRangeError` for $\text{INT\_MIN} / -1$ |
++| **Floor Division** | `a // b` | Integer division rounded toward negative infinity (Python-style) | `DivisionByZeroError` if $b=0$; `IntegerRangeError` for $\text{INT\_MIN} // -1$ |
++| **Floored Modulo** | `a % b` | Modulo paired with `//`, satisfying $a = (a // b) \times b + a \% b$. Result takes the sign of $b$ | `DivisionByZeroError` if $b=0$; $\text{INT\_MIN} \% -1 = 0$ (in range) |
++| **Exponentiation** | `a ** b` | Powers with non-negative exponent ($b \ge 0$) | `DomainError` if $b < 0$; `IntegerRangeError` on overflow |
++| **Unary Minus** | `-a` | Arithmetic negation | `IntegerRangeError` for $-\text{INT\_MIN}$ |
++| **Unary Plus** | `+a` | Arithmetic identity | None |
++| **Comparisons** | `==`, `!=`, `<`, `<=`, `>`, `>=` | Relational test, yielding `1` (true) or `0` (false) | None |
++
++### Exponentiation Rules
++- $x^0 = 1$ for all integers $x$, including $0^0 = 1$.
++- $0^b = 0$ for all $b > 0$.
++- $1^b = 1$ for all $b \ge 0$.
++- $(-1)^b$ evaluates to $1$ when $b$ is even and $-1$ when $b$ is odd.
++- **Short-Circuit Overflow Guard:** When $|x| \ge 2$ and $b > 31$, MiniCalc raises `IntegerRangeError` immediately without computing the power. For example, `2 ** 1000000000` halts instantly in $O(1)$ time rather than exhausting memory.
++- Negative exponents always raise `DomainError`, even for bases `0` and `1`.
++
++### Worked Examples (Verified against Live Runtime)
++
++The following table lists verified worked examples executed directly against the MiniCalc engine:
++
++| Input Expression | Produced Result | Underlying Rule / Rationale |
++| :--- | :---: | :--- |
++| `2 + 3 * 4` | `14` | Multiplication binds tighter than addition |
++| `(2 + 3) * 4` | `20` | Parentheses override default operator precedence |
++| `10 - 3 - 2` | `5` | Subtraction is left-associative: `(10 - 3) - 2` |
++| `-2 ** 2` | `-4` | `**` binds tighter than unary minus: `-(2 ** 2)` |
++| `2 ** 3 ** 2` | `512` | `**` is right-associative: `2 ** (3 ** 2) = 2 ** 9` |
++| `2 ** 30` | `1073741824` | Valid 32-bit positive power within bounds |
++| `7 / 2` | `3` | Truncating division toward zero |
++| `-7 / 2` | `-3` | Truncating division rounds toward zero |
++| `7 // 2` | `3` | Floor division rounds toward negative infinity |
++| `-7 // 2` | `-4` | Floor division rounds down to $-4$ |
++| `-7 % 2` | `1` | Floored modulo takes the positive sign of the divisor $2$ |
++| `7 % -2` | `-1` | Floored modulo takes the negative sign of the divisor $-2$ |
++| `-7 % -2` | `-1` | Floored modulo with negative dividend and divisor |
++| `5 > 3` | `1` | Comparison true evaluates to integer `1` |
++| `5 == 4` | `0` | Comparison false evaluates to integer `0` |
++| `2 + 3 == 5` | `1` | Arithmetic binds tighter than relational operators |
++| `-2147483647 - 1` | `-2147483648` | Boundary representation of `INT_MIN` |
++
++---
++
++## 6. Variables, Environment, and `ans`
++
++### 6.1 Variable Assignment and Usage
++- Variables are assigned with `name = expression`. The assigned value is bound to `name` in the environment and echoed as `name = <value>`.
++- Variable names are case-sensitive identifiers matching `[A-Za-z_][A-Za-z0-9_]*`.
++- Referencing an identifier that has not yet been assigned raises an `UndefinedNameError`.
++
++### 6.2 The Special Identifier `ans`
++- `ans` is a built-in, read-only variable that stores the result of the **most recent successful expression**.
++- **Assignments do not change `ans`:** Evaluating `x = 7` binds `x` but leaves `ans` holding the value of the expression evaluated prior to that assignment.
++- `ans` is unset until the first successful expression has executed. Referencing `ans` prior to any successful expression raises an `UndefinedNameError`.
++- `ans` cannot be reassigned; attempts to execute `ans = expr` raise an `AssignmentError`.
++
++### 6.3 Atomic Statement Execution
++MiniCalc statements execute transactionally:
++- If an evaluation fails at any point during a statement (due to syntax, division by zero, overflow, or undefined names), the environment is left completely unmodified.
++- No variable is updated, and `ans` retains its prior value.
++
++---
++
++## 7. Built-in Functions
++
++MiniCalc includes four core mathematical functions. User-defined functions are deliberately excluded.
++
++| Function | Arity | Description | Boundary Conditions |
++| :--- | :---: | :--- | :--- |
++| `abs(x)` | 1 | Absolute value of $x$. | `abs(-2147483647 - 1)` raises `IntegerRangeError` because $+2,147,483,648$ exceeds `INT_MAX`. |
++| `min(a, b, ...)` | $\ge 1$ | Returns the smallest argument. | Arity checked prior to argument evaluation. |
++| `max(a, b, ...)` | $\ge 1$ | Returns the largest argument. | Arity checked prior to argument evaluation. |
++| `gcd(a, b)` | 2 | Greatest common divisor, always $\ge 0$. | $\text{gcd}(0, 0) = 0$. $\text{gcd}(\text{INT\_MIN}, 0)$ and $\text{gcd}(\text{INT\_MIN}, \text{INT\_MIN})$ raise `IntegerRangeError`. |
++
++- Built-in names are reserved words. They cannot be assigned to (`abs = 5` raises `AssignmentError`) or used as values without arguments (`abs + 1` raises `UndefinedNameError`).
++- Calling an undefined function or supplying the wrong number of arguments raises a `CallError`.
++- Argument arity is validated before argument expressions are evaluated.
++
++---
++
++## 8. Error Catalog and Diagnostics
++
++MiniCalc defines eight specialized error classes under the `MiniCalcError` hierarchy. Every diagnostic includes a descriptive message, the 1-based source position, the source line, and an alignment caret pointing to the error location.
++
++Below are verbatim outputs captured from real runs:
++
++### 1. `LexError`
++Raised during lexical scanning for invalid tokens, unsupported decimals, or malformed numbers.
++```text
++Error: Lexical error at line 1, column 2: decimals are not supported; MiniCalc works with integers only
++  3.14
++   ^
++```
++
++### 2. `ParseError`
++Raised during parsing for syntax violations, missing operands, unclosed parentheses, or chained comparisons.
++```text
++Error: Syntax error at line 1, column 5: expected an expression, found '*'
++  2 + * 3
++      ^
++```
++
++### 3. `DivisionByZeroError`
++Raised during evaluation when division, floor division, or modulo has a divisor of zero.
++```text
++Error: Runtime error at line 1, column 4: division by zero
++  10 / 0
++     ^
++```
++
++### 4. `IntegerRangeError`
++Raised when any arithmetic result or literal exceeds the signed 32-bit integer range.
++```text
++Error: Runtime error at line 1, column 12: integer result out of 32-bit range
++  2147483647 + 1
++             ^
++```
++
++### 5. `DomainError`
++Raised when an operation receives an input outside its mathematical domain, such as a negative exponent.
++```text
++Error: Runtime error at line 1, column 3: negative exponent
++  2 ** -1
++    ^
++```
++
++### 6. `UndefinedNameError`
++Raised when an unbound variable or unset `ans` is referenced, or a built-in is used as a bare value.
++```text
++Error: Runtime error at line 1, column 1: name 'unknown_var' is not defined
++  unknown_var + 1
++  ^
++```
++
++### 7. `CallError`
++Raised when invoking an undefined function, calling a non-function, or providing an incorrect number of arguments.
++```text
++Error: Runtime error at line 1, column 1: unknown function 'foo'
++  foo(1)
++  ^
++```
++
++### 8. `AssignmentError`
++Raised when attempting to assign a value to a reserved identifier (`ans` or built-in function names).
++```text
++Error: Runtime error at line 1, column 1: cannot assign to reserved name 'ans'
++  ans = 42
++  ^
++```
++
++---
++
++## 9. Resource Limits and Boundary Behaviors
++
++MiniCalc enforces strict execution limits to ensure safety and prevent denial-of-service conditions:
++- **Maximum Line Length:** Input lines are capped at 1,000 characters (`limits.py`). Exceeding this limit immediately raises a `LexError` at column 1001.
++- **Nesting Depth Limit:** The parser enforces a maximum expression nesting depth of 200 (`parser.MAX_DEPTH = 200`). An expression with 199 nested parentheses evaluates successfully, while 200 nested parentheses triggers a `ParseError` ("expression is nested too deeply").
++- **Short-Circuit Exponentiation:** As detailed in Section 5, powers with $|base| \ge 2$ and exponent $> 31$ raise `IntegerRangeError` in $O(1)$ time without computing large values.
++
++### Verified Architectural Edge Cases
++1. **`ans` and Assignments:** `ans` updates only upon a successful *expression*. Successful assignments (`x = 7`) leave `ans` unchanged.
++2. **Character Classification (`12é`):** Only ASCII letters and underscores immediately following digits trigger a multi-character numeric error at column 1 (`12abc`). Non-ASCII characters directly after digits are handled as illegal characters at their own column (`12é` raises `LexError` at column 3).
++3. **`INT_MIN % -1`:** While `INT_MIN / -1` overflows 32-bit signed range (giving `IntegerRangeError`), `INT_MIN % -1` equals `0`, which is well within 32-bit range and executes without error.
++4. **Negative Exponents:** Negative exponentiation is universally rejected as a `DomainError` across all bases, including `0` and `1`.
++5. **Reserved Target Pre-Check:** Target name validity checks occur prior to evaluating the right-hand side of an assignment. Thus, `ans = 1 / 0` and `abs = 1 / 0` fail immediately with `AssignmentError` at column 1 rather than `DivisionByZeroError`.
++6. **GCD Range Limits:** While mathematical GCD is non-negative, $\text{gcd}(\text{INT\_MIN}, 0)$ and $\text{gcd}(\text{INT\_MIN}, \text{INT\_MIN})$ equal $2,147,483,648$, which exceeds `INT_MAX`. Both properly raise `IntegerRangeError`.
++7. **Parenthesis Depth Boundary:** 199 nested parentheses evaluate cleanly; 200 nested parentheses raise `ParseError`.
++
++---
++
++## 10. Non-Goals
++
++The following features are intentionally excluded from MiniCalc v1.0 to keep the language focused, predictable, and robust:
++- Floating-point arithmetic (all computations are exact 32-bit integers).
++- Strings and character manipulation.
++- User-defined functions and closures.
++- Control flow constructs (such as `if`, `while`, or `for` loops).
++- Multiple statements per line (semicolons are not supported).
++- Unbounded big integers.
++- Scoping hierarchies or namespaces.
++
++---
++
++## 11. Evaluation Against PL Design Criteria
++
++MiniCalc was engineered in strict alignment with fundamental Programming Language design principles:
++
++### 1. Readability
++- **Claim:** MiniCalc code is intuitive, readable, and free of syntactic noise.
++- **Design Choice:** Familiar standard mathematical infix notation, line-oriented structure (one statement per line), transparent `#` comment syntax, and clean spacing.
++- **Evidence:** See `examples/01_basics.mc` and `tests/golden/comments_whitespace.mc`.
++
++### 2. Writability
++- **Claim:** Common arithmetic workflows and repetitive calculations require minimal boilerplate.
++- **Design Choice:** Automatic `ans` result chaining, intuitive variable assignments, dual division operators (`/` for truncation, `//` for floor), and built-in functions (`abs`, `min`, `max`, `gcd`).
++- **Evidence:** See `examples/03_variables.mc`, `examples/04_builtins.mc`, and `tests/golden/division.mc`.
++
++### 3. Reliability
++- **Claim:** Execution is deterministic, type-safe, and free from silent failures or undefined behavior.
++- **Design Choice:** Checked signed 32-bit integer arithmetic with `IntegerRangeError` on overflow, strict domain checks, atomic statement rollback upon error, and multi-line visual diagnostics with carets.
++- **Evidence:** See `tests/golden/range.mc`, `tests/golden/rulings.mc`, and `examples/05_errors.mc`.
++
++### 4. Cost
++- **Claim:** The language has near-zero overhead, fast startup, and bounded computational cost.
++- **Design Choice:** Single-pass $O(N)$ lexical analyzer, linear recursive-descent parser, zero third-party dependencies, 1000-character line limit, recursion depth limit (200), and short-circuit exponentiation bounds.
++- **Evidence:** See `tests/golden/power.mc`, `tests/test_lexer.py`, and `tests/test_parser.py`.
++
++### 5. Orthogonality
++- **Claim:** Core language constructs compose freely and uniformly without arbitrary special-case syntax rules.
++- **Design Choice:** Any valid expression can appear wherever an expression is required: inside function arguments, as unary/binary operands, within grouping parentheses, or on the right side of an assignment.
++- **Evidence:** See `examples/02_precedence.mc`, `tests/golden/precedence.mc`, and `tests/golden/builtins.mc`.
++
++### 6. Simplicity
++- **Claim:** The language has a minimal learning curve and an exceptionally small conceptual surface area.
++- **Design Choice:** Exactly one data type (signed 32-bit integer), no implicit type coercions, a grammar of roughly a dozen production rules, and an absence of complex control flow structures.
++- **Evidence:** See `examples/01_basics.mc`, `tests/golden/arithmetic.mc`, and `docs/context/language-spec.md`.
++
++---
++
++## 12. Design Decisions and Alternatives
++
++### Why Python?
++Python 3.10+ standard library was selected as the implementation runtime because it eliminates all compilation steps, complex toolchain installations, and platform-specific build configurations. A grader or user can execute MiniCalc immediately on any system with a standard Python installation.
++- *Alternatives Considered:* Java was evaluated but rejected because it required approximately 1.8x more boilerplate code and a full JDK setup. C++ was evaluated but rejected due to portability overhead and undefined behavior on signed integer overflow.
++
++### Why a Hand-Written Recursive-Descent Parser?
++MiniCalc employs a hand-crafted lexer and recursive-descent parser rather than an external parser-generator library (such as PLY, Lark, or ANTLR). Hand-written parsing provides complete control over exact token coordinates (line and column numbers), allows tailoring error messages with precise diagnostic carets, maintains zero external dependencies, and is easy to explain and demonstrate.
++
++### Why 32-Bit Checked Arithmetic?
++Native Python integers have arbitrary precision and never overflow. Left unconstrained, Python integers would mask computational limits and permit resource exhaustion attacks (such as $2^{1000000}$). MiniCalc implements a strict 32-bit signed integer model with explicit range checks on every operation, providing the safety and predictability expected in systems programming languages.
++
++### Why Truncating `/` plus Floor `//` and Floored `%`?
++Programming languages and calculators diverge on division semantics: C, Java, and standard desktop calculators truncate toward zero (`/`), whereas Python and mathematical number theory floor toward negative infinity (`//`). MiniCalc provides both operators, pairing `//` with floored modulo `%` so that the foundational quotient-remainder identity $a = (a // b) \times b + a \% b$ holds unconditionally.
++
++### Why Atomic Statements?
++In interactive REPLs and scripting environments, an expression that fails midway (e.g., encountering division by zero after evaluating several terms) should not leave the system in a corrupted or partially modified state. MiniCalc treats every statement as a transactional unit: variable bindings are updated only upon complete success, and `ans` is preserved if any error occurs.
+diff --git a/docs/PRESENTATION.md b/docs/PRESENTATION.md
+new file mode 100644
+index 0000000..0193eee
+--- /dev/null
++++ b/docs/PRESENTATION.md
+@@ -0,0 +1,172 @@
++# MiniCalc Presentation & Defense Plan
++
++This document outlines the presentation plan, live demonstration script, slide structure, and defense Q&A for MiniCalc, developed for **CMPSC 132: Programming Languages**.
++
++---
++
++## 1. 60-Second Elevator Pitch
++
++"Good day! We present **MiniCalc**, a line-oriented programming language designed for integer arithmetic. While small in syntax, MiniCalc is engineered with full production rigor: it features a hand-written lexical scanner, a recursive-descent parser with formal operator precedence, an AST evaluator with strictly checked 32-bit signed arithmetic, and an interactive REPL with visual diagnostic carets. 
++
++Unlike standard Python where integers expand unboundedly and hide overflow, MiniCalc guarantees that every operation stays within 32-bit limits, raising an immediate error on overflow or domain violation. Crucially, statements execute atomically—a failed calculation never corrupts variables or the `ans` accumulator. Built with zero runtime dependencies using only the Python standard library, MiniCalc achieves high reliability, complete documentation of all components, and verified correctness across unit, golden, and differential test suites."
++
++---
++
++## 2. Speaker Allocation Table
++
++| Section / Slide | Topic | Assigned Speaker | Target Time |
++| :--- | :--- | :--- | :---: |
++| Slide 1 | Introduction, Architecture & Project Scope | *(leave blank for speaker)* | 1.0 min |
++| Slide 2 | Language Features & PL Design Criteria | *(leave blank for speaker)* | 1.5 min |
++| Slide 3 | Grammar, Precedence & Recursive Descent | *(leave blank for speaker)* | 1.5 min |
++| Slide 4 | Checked Integer Model & Error Handling | *(leave blank for speaker)* | 1.5 min |
++| Slide 5 | Live Demonstration (`tests/golden/demo.mc`) | *(leave blank for speaker)* | 2.0 min |
++| Slide 6 | Verification, Testing & Extensibility | *(leave blank for speaker)* | 1.5 min |
++| Q&A | Defense & Evaluator Questions | All Team Members | ~3.0 min |
++
++---
++
++## 3. Live Demonstration Script
++
++The live demonstration uses the verified test file `tests/golden/demo.mc` to showcase variable assignment, expression evaluation, `ans` tracking, built-ins, and multi-family error handling with diagnostic carets.
++
++### Command Execution
++```bash
++python -m minicalc tests/golden/demo.mc
++```
++
++### Script Source (`tests/golden/demo.mc`)
++```text
++# MiniCalc demo session: variables, ans, built-ins, comparisons, one error per family
++x = 7
++y = 3
++x * y + 2
++ans + x
++max(x, y) ** 2
++min(x, y) == y
++abs(-x)
++gcd(x, y)
++x = 1 / 0
++x
++2 +
++3.14
++ans
++max(abs(-10), 3)
++```
++
++### Real Captured Output
++```text
++line 2: x = 7
++line 3: y = 3
++line 4: = 23
++line 5: = 30
++line 6: = 49
++line 7: = 1
++line 8: = 7
++line 9: = 1
++Error: Runtime error at line 10, column 7: division by zero
++  x = 1 / 0
++        ^
++line 11: = 7
++Error: Syntax error at line 12, column 4: expected an expression, found end of line
++  2 +
++     ^
++Error: Lexical error at line 13, column 2: decimals are not supported; MiniCalc works with integers only
++  3.14
++   ^
++line 14: = 7
++line 15: = 10
++```
++
++### Talking Points During Demo
++1. **Lines 2–3 (Variables):** Variable assignments (`x = 7`, `y = 3`) echo cleanly with line prefixes.
++2. **Lines 4–5 (`ans` Accumulator):** `x * y + 2` yields `23`. Next line `ans + x` uses `23 + 7 = 30`, proving expression chaining.
++3. **Lines 6–9 (Built-ins & Comparisons):** `max(7, 3) ** 2 = 49`; relational comparison `min(7, 3) == 3` yields integer `1` (true); `abs(-7) = 7`; `gcd(7, 3) = 1`.
++4. **Line 10 (Division by Zero & Atomic Statements):** `x = 1 / 0` triggers a `DivisionByZeroError` with an exact caret at column 7.
++5. **Line 11 (State Preservation):** Evaluating `x` shows `x = 7`, demonstrating that the failed assignment in line 10 did not overwrite `x`.
++6. **Lines 12–13 (Syntax and Lexical Errors):** Shows `ParseError` on incomplete expression `2 +` and `LexError` on unsupported floating decimal `3.14`.
++7. **Line 14 (`ans` Preservation):** `ans` still evaluates to `7` (from `abs(-x)` on line 8), proving errors do not corrupt `ans`.
++8. **Line 15 (Function Composition):** Nested calls `max(abs(-10), 3)` evaluate cleanly to `10`.
++
++---
++
++## 4. 6-Slide Outline (Mapped to Grading Rubric)
++
++### Slide 1: Introduction & Architecture (Rubric: Requirements & Delivery)
++- **Title:** MiniCalc: A Verified Arithmetic Programming Language
++- **Context:** CMPSC 132 Final Project; team project delivered on time.
++- **Pipeline Architecture:**
++  $$\text{Source Line} \longrightarrow \text{Lexer} \longrightarrow [\text{Token}] \longrightarrow \text{Parser} \longrightarrow \text{AST} \longrightarrow \text{Evaluator}(\text{Environment}) \longrightarrow \text{Result}$$
++- **Zero Runtime Dependencies:** Python 3.10+ standard library only; cross-platform without installation overhead.
++
++### Slide 2: Language Features & Expressiveness (Rubric: Requirements & PL Criteria)
++- **Features:** Integer arithmetic (`+ - * / // % **`), comparisons (`== != < <= > >=`), variables, read-only `ans`, built-ins (`abs min max gcd`).
++- **PL Evaluation Criteria:**
++  - *Readability:* Mathematical infix notation, line orientation, `#` comments.
++  - *Writability:* `ans` chaining, built-in functions, dual division modes.
++  - *Orthogonality:* Expressions nest uniformly across calls, operands, and assignments.
++  - *Simplicity:* One value type (32-bit signed int), small fixed grammar.
++
++### Slide 3: Grammar, Precedence & Parser Architecture (Rubric: Presentation)
++- **EBNF Grammar:** Structured explicitly into 6 precedence tiers.
++- **Precedence Hierarchy:** Calls/Parens $\to$ Exponentiation (`**`) $\to$ Unary (`+ -`) $\to$ Multiplicative (`* / // %`) $\to$ Additive (`+ -`) $\to$ Relational (`== != < <= > >=`).
++- **Hand-Written Recursive Descent:** Modular methods per non-terminal (`parse_additive`, `parse_term`, `parse_power`, `parse_unary`).
++- **Right-Associativity:** Direct recursion handles `2 ** 3 ** 2 == 512`.
++
++### Slide 4: Checked Integer Model & Error Diagnostics (Rubric: Runtime & Reliability)
++- **32-Bit Range:** Strict enforcement $[-2^{31}, 2^{31} - 1]$ on every intermediate operation.
++- **Preventing Denial-of-Service:** Power short-circuit (`|base| >= 2` and `exp > 31`) rejects massive exponents instantly in $O(1)$.
++- **Diagnostic Carets:** 8 specialized error classes under `MiniCalcError`; 1-based line:column coordinates with visual carets.
++- **Atomic Execution:** Errors rollback all modifications, preserving variable and `ans` state.
++
++### Slide 5: Quality Assurance & Verification (Rubric: Documentation & Testing)
++- **Documentation Standard:** Every class variable and function fully documented; validated automatically by `scripts/check_docs.py`.
++- **Three-Tier Testing Pyramid:**
++  1. *Unit Tests:* Comprehensive tests for lexer, parser, evaluator, environment, CLI, and errors.
++  2. *Golden Tests:* Specification-derived `.mc` / `.out` test suites covering arithmetic, edge cases, and rulings.
++  3. *Differential Testing:* Randomized differential test against an independently written oracle.
++
++### Slide 6: Summary & Live Demonstration (Rubric: Presentation & Runtime)
++- **Execution Proof:** Real-time demonstration with `tests/golden/demo.mc`.
++- **Clean Interface:** REPL with meta-commands (`:help`, `:vars`, `:clear`, `:quit`), `--no-color` support, and script runners.
++- **Future Extensibility:** Clean AST separation provides a direct path for future additions (e.g., float types, user functions).
++
++---
++
++## 5. Defense Q&A: 12 Likely Questions & Concise Answers
++
++### Q1: Why choose a hand-written recursive-descent parser instead of a parser generator like Lark or PLY?
++**Answer:** A hand-written recursive-descent parser gives us total control over token coordinates, customized error diagnostics, and caret positioning. It avoids heavy third-party dependencies, conforms to our standard-library-only requirement, and makes the grammar transformations easy to trace and defend.
++
++### Q2: How does the grammar encode operator precedence without ambiguity?
++**Answer:** Precedence is encoded structurally into the stratification of grammar rules. Each precedence level corresponds to a separate non-terminal rule: `expression` handles comparisons, `additive` handles `+` and `-`, `term` handles `* / // %`, `unary` handles prefix signs, and `power` handles `**`. Lower-precedence rules call higher-precedence rules, naturally enforcing the correct evaluation order in the parse tree.
++
++### Q3: Why does `-2 ** 2` evaluate to `-4` instead of `4`?
++**Answer:** In MiniCalc, as in Python, mathematics, and our EBNF grammar, exponentiation (`**`) binds tighter than unary minus. The expression is parsed as `-(2 ** 2) = -4`. To square negative two, explicit parentheses are required: `(-2) ** 2 == 4`.
++
++### Q4: How does MiniCalc detect and handle integer overflow?
++**Answer:** Native Python integers have unbounded precision. To maintain a strict 32-bit integer model, MiniCalc checks every intermediate result against `INT_MIN` ($-2,147,483,648$) and `INT_MAX` ($2,147,483,647$) using `limits.in_range()`. If a value falls outside this range, an `IntegerRangeError` is raised immediately, preventing silent wraparound.
++
++### Q5: What are atomic statements and how are they implemented?
++**Answer:** Atomic statement execution means a statement either completes successfully or leaves the program environment completely unchanged. In `Interpreter.run_line`, the right-hand side is evaluated before variable binding occurs, and `ans` is only updated after a successful expression. If an exception occurs, the assignment never takes effect and `ans` remains intact.
++
++### Q6: What does the differential test prove, and what does it NOT prove?
++**Answer:** The differential test cross-checks MiniCalc's evaluator against an independently developed specification oracle across 5,600+ randomized expressions. It proves that the evaluated values and error classes match the specification across thousands of generated inputs. However, it does **not** compare error message phrasing or caret coordinates (which are verified separately by our golden test suite), and the oracle was written from the specification rather than being an external commercial interpreter.
++
++### Q7: How are source positions captured and rendered with visual carets?
++**Answer:** Every `Token` emitted by the lexer stores a `SourcePos` dataclass containing 1-based `line` and `col` values. When an error is raised, the offending token's `pos` is attached to `MiniCalcError`. The `render()` method extracts the source line and computes an indentation margin of $2 + (\text{col} - 1)$ spaces before placing the caret `^`.
++
++### Q8: How does `ans` behave across expressions and variable assignments?
++**Answer:** `ans` is updated only upon the evaluation of a successful *expression*. Variable assignments (`x = 5`) do not update `ans`. If an expression fails, `ans` retains its previous value. Prior to any successful expression, reading `ans` raises an `UndefinedNameError`.
++
++### Q9: How would you extend MiniCalc to support floating-point numbers?
++**Answer:** We would add a `FLOAT` token type in the lexer for decimal literals (`[0-9]+\.[0-9]+`), introduce a `Value` union or float type in AST nodes and the evaluator, implement IEEE 754 precision rules, adjust `/` to return floating-point values, and define type promotion rules when mixing integers and floats.
++
++### Q10: How would you extend MiniCalc to support user-defined functions?
++**Answer:** We would extend the grammar with function definition syntax (`def f(x) = expr`), add a `FunctionDef` AST node, enhance the `Environment` with a frame-based call stack for local variable scoping, and evaluate function bodies by creating a child environment populated with argument bindings.
++
++### Q11: Why provide both truncating division `/` and flooring division `//`?
++**Answer:** Truncating division (`/`) rounds toward zero, matching C, Java, and conventional desk calculators. Flooring division (`//`) rounds toward negative infinity and pairs with floored modulo (`%`), guaranteeing the mathematical identity $a = (a // b) \times b + a \% b$. Providing both allows users to select the exact division semantics appropriate for their calculation.
++
++### Q12: How does the exponentiation guard protect against denial-of-service?
++**Answer:** If $|base| \ge 2$, any exponent greater than 31 will overflow 32-bit signed limits (since $2^{31} > \text{INT\_MAX}$). Rather than attempting to compute massive values like $2^{1000000000}$ (which would freeze CPU or exhaust RAM), MiniCalc inspects the exponent first and raises `IntegerRangeError` in $O(1)$ time without computing the power.
+diff --git a/examples/.gitkeep b/examples/.gitkeep
+deleted file mode 100644
+index e69de29..0000000
+diff --git a/examples/01_basics.mc b/examples/01_basics.mc
+new file mode 100644
+index 0000000..5ed4440
+--- /dev/null
++++ b/examples/01_basics.mc
+@@ -0,0 +1,24 @@
++# 01_basics.mc — Basic arithmetic, comments, and line orientation
++# MiniCalc evaluates one statement per line.
++
++# Integer arithmetic with +, -, *, /, //, %
++10 + 20
++50 - 18
++6 * 7
++
++# Truncating division (rounds toward zero)
++14 / 4
++-14 / 4
++
++# Floor division (rounds toward negative infinity)
++14 // 4
++-14 // 4
++
++# Floored modulo (result takes the sign of the divisor)
++14 % 4
++-14 % 4
++
++# Unary plus and minus
+++42
++-42
++--42
+diff --git a/examples/02_precedence.mc b/examples/02_precedence.mc
+new file mode 100644
+index 0000000..8fdb4ac
+--- /dev/null
++++ b/examples/02_precedence.mc
+@@ -0,0 +1,25 @@
++# 02_precedence.mc — Operator precedence and associativity
++
++# Multiplication binds tighter than addition
++2 + 3 * 4
++
++# Parentheses override default precedence
++(2 + 3) * 4
++
++# Left-associative subtraction and division
++20 - 5 - 3
++100 / 5 / 2
++
++# Exponentiation (**) binds tighter than unary minus: -2 ** 2 is -(2 ** 2)
++-2 ** 2
++
++# Exponentiation is right-associative: 2 ** 3 ** 2 is 2 ** (3 ** 2) = 2 ** 9
++2 ** 3 ** 2
++
++# Arithmetic binds tighter than comparison
++2 + 3 == 5
++10 * 2 > 15
++
++# Comparisons return 1 (true) or 0 (false)
++5 >= 5
++4 != 4
+diff --git a/examples/03_variables.mc b/examples/03_variables.mc
+new file mode 100644
+index 0000000..dcac9ac
+--- /dev/null
++++ b/examples/03_variables.mc
+@@ -0,0 +1,19 @@
++# 03_variables.mc — Variables, assignment, and ans
++
++# Variable assignment: name = expression
++width = 20
++height = 5
++
++# Using variables in expressions
++area = width * height
++perimeter = 2 * (width + height)
++
++# ans holds the value of the most recent successful expression
++area + 10
++
++# Reading ans in an expression
++ans * 2
++
++# Assignments do not update ans; ans still refers to the previous expression result
++scale = 3
++ans
+diff --git a/examples/04_builtins.mc b/examples/04_builtins.mc
+new file mode 100644
+index 0000000..050082b
+--- /dev/null
++++ b/examples/04_builtins.mc
+@@ -0,0 +1,19 @@
++# 04_builtins.mc — Built-in functions: abs, min, max, gcd
++
++# abs(x): absolute value
++abs(-42)
++abs(17)
++
++# min(a, b, ...): minimum of one or more arguments
++min(50, 12, 85, 7)
++min(99)
++
++# max(a, b, ...): maximum of one or more arguments
++max(50, 12, 85, 7)
++max(-10, -5, -20)
++
++# gcd(a, b): greatest common divisor of two integers (non-negative)
++gcd(48, 18)
++gcd(-24, 36)
++gcd(0, 5)
++gcd(0, 0)
+diff --git a/examples/05_errors.mc b/examples/05_errors.mc
+new file mode 100644
+index 0000000..b33df0d
+--- /dev/null
++++ b/examples/05_errors.mc
+@@ -0,0 +1,26 @@
++# 05_errors.mc — Demonstrates all 8 MiniCalc error classes
++# Each line triggers a distinct error family; execution continues across errors.
++
++# 1. LexError: non-integer float literal
++3.14
++
++# 2. ParseError: invalid syntax with consecutive operators
++2 + * 3
++
++# 3. DivisionByZeroError: division by zero
++10 / 0
++
++# 4. IntegerRangeError: 32-bit signed integer overflow
++2147483647 + 1
++
++# 5. DomainError: negative exponent
++2 ** -1
++
++# 6. UndefinedNameError: variable accessed before assignment
++unknown_var + 1
++
++# 7. CallError: invocation of unknown function
++foo(1)
++
++# 8. AssignmentError: assignment to reserved identifier ans
++ans = 42
+diff --git a/examples/06_showcase.mc b/examples/06_showcase.mc
+new file mode 100644
+index 0000000..171c4e1
+--- /dev/null
++++ b/examples/06_showcase.mc
+@@ -0,0 +1,45 @@
++# 06_showcase.mc — Realistic computations in MiniCalc
++# Covers compound interest in whole pesos, GCD fraction reduction, and bit-size calculations.
++
++# -----------------------------------------------------------------------------
++# 1. Compound Interest in Whole Pesos
++# Grow a 50,000 PHP investment at 8% per year over a 3-year term
++# -----------------------------------------------------------------------------
++principal = 50000
++rate = 8
++
++# Year 1 balance
++year1 = principal + (principal * rate) / 100
++
++# Year 2 balance
++year2 = year1 + (year1 * rate) / 100
++
++# Year 3 balance
++year3 = year2 + (year2 * rate) / 100
++
++# Total interest earned across the full 3-year term
++total_interest = year3 - principal
++
++# -----------------------------------------------------------------------------
++# 2. GCD Fraction Reduction
++# Reduce fraction 840 / 1260 to its simplest irreducible terms
++# -----------------------------------------------------------------------------
++numerator = 840
++denominator = 1260
++
++common_factor = gcd(numerator, denominator)
++reduced_num = numerator / common_factor
++reduced_den = denominator / common_factor
++
++# -----------------------------------------------------------------------------
++# 3. Bit-size and Address Space Calculation
++# Calculate addressable bytes and maximum memory range using powers of 2
++# -----------------------------------------------------------------------------
++# Total bytes addressable by a 24-bit address bus (16 MiB)
++bus_bits = 24
++addressable_bytes = 2 ** bus_bits
++addressable_kib = addressable_bytes / 1024
++addressable_mib = addressable_kib / 1024
++
++# Highest positive value representable in signed 32-bit integers (2^31 - 1)
++int_max = (2 ** 30 - 1) + 2 ** 30
