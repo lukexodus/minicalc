@@ -12,7 +12,13 @@ Unlike standard Python where integers expand unboundedly and hide overflow, Mini
 
 ---
 
-## 2. Speaker Allocation Table
+## 2. Team Members & Speaker Allocation Table
+
+### Group Members
+- Adrian Luke A. Labasan
+- Alejandrei Jazz F. Lopez
+- Geila May C. Rigayen
+- Melvie Jeanna O. Abad
 
 | Section / Slide | Topic | Assigned Speaker | Target Time |
 | :--- | :--- | :--- | :---: |

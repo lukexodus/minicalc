@@ -210,3 +210,14 @@ MiniCalc features an extensive automated test suite including unit tests, golden
    ```bash
    python scripts/check_docs.py
    ```
+
+---
+
+## Authors & Group Members
+
+**CMPSC 132: Programming Languages**  
+Final Project Group:
+- Adrian Luke A. Labasan
+- Alejandrei Jazz F. Lopez
+- Geila May C. Rigayen
+- Melvie Jeanna O. Abad

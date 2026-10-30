@@ -82,9 +82,10 @@ Confirm that no internal governance files (`.git`, `patch/`, `docs/reports`, `do
    Course: CMPSC 132 (1st Sem, A.Y. 2025-2026)
    Project Title: MiniCalc — Verified 32-Bit Arithmetic Programming Language
    Group Members:
-     - [Member 1 Name] (Section)
-     - [Member 2 Name] (Section)
-     - [Member 3 Name] (Section)
+     - Adrian Luke A. Labasan
+     - Alejandrei Jazz F. Lopez
+     - Geila May C. Rigayen
+     - Melvie Jeanna O. Abad
    
    Google Drive Link (Public View):
    [PASTE LINK HERE]
