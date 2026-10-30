@@ -65,9 +65,15 @@ class Parser:
     unary operators, and the right-associative ``**``.
 
     Attributes:
-        tokens: The token list to consume; the last token is ``EOF``.
-        index: Zero-based index of the next token to consume.
-        _depth: Number of ``_expression`` calls currently on the stack.
+        tokens: The token list to consume; the last token is ``EOF``. Holding
+            the list (rather than re-lexing) is what lets every node carry the
+            exact position of the token that produced it.
+        index: Zero-based index of the next token to consume. One cursor is
+            enough because the grammar is LL(1): every decision needs at most
+            the next token, so no token list is ever copied.
+        _depth: Number of ``_expression`` calls currently on the stack, compared
+            against ``MAX_DEPTH`` so pathological nesting becomes a
+            ``ParseError`` instead of an escaping ``RecursionError``.
     """
 
     def __init__(self, tokens: list[Token]) -> None:
@@ -221,6 +227,9 @@ class Parser:
 
     def _additive(self) -> Node:
         """Parse ``additive = term { ( PLUS | MINUS ) term }`` left-associatively."""
+        # Precedence climbing: each level loops over its own operators and calls
+        # the next-tighter level for operands. Looping (rather than recursing per
+        # operator) keeps `1 + 1 + ...` chains at constant stack depth.
         node = self._term()
         while self._peek().type in _ADDITIVE_OPS:
             operator = self._advance()
@@ -230,6 +239,8 @@ class Parser:
 
     def _term(self) -> Node:
         """Parse ``term = unary { ( STAR | SLASH | DSLASH | PERCENT ) unary }``."""
+        # Same shape as _additive, one precedence level tighter, which is what
+        # makes `2 + 3 * 4` mean `2 + (3 * 4)`.
         node = self._unary()
         while self._peek().type in _TERM_OPS:
             operator = self._advance()
@@ -252,6 +263,10 @@ class Parser:
         token = self._peek()
         if token.type is TokenType.POW:
             self._advance()
+            # The right side is _unary(), not _power(): that is what makes `**`
+            # right-associative (`2 ** 3 ** 2` == `2 ** (3 ** 2)`), and because
+            # `**` is reached from _unary only after a primary, it binds tighter
+            # than unary minus (`-2 ** 2` == `-(2 ** 2)`, spec section 3).
             exponent = self._unary()
             return Binary("**", base, exponent, token.pos)
         return base

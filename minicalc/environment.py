@@ -13,10 +13,21 @@ from .errors import SourcePos, UndefinedNameError
 class Environment:
     """Hold user variables and the current ``ans`` value.
 
+    This is the only mutable state in the interpreter, so every statement sees
+    exactly the bindings the previous statements left behind.
+
     Attributes:
-        variables: User-defined name-to-value bindings.
-        ans: Value of the last successful expression, or ``None`` before the
-            first success.
+        variables: User-defined name-to-value bindings. ``ans`` is deliberately
+            kept out of this mapping so ``:vars`` and :meth:`items` list only
+            names the user created, and so ``ans`` can never be overwritten by
+            an assignment.
+        ans: Value of the last successful expression, or ``None`` while none has
+            succeeded yet. :meth:`record_result` sets it, and only
+            ``Interpreter.run_line`` calls that method, after the statement is
+            known to have succeeded and to be an expression rather than an
+            assignment ([D-15] item 1). :meth:`clear` (the ``:clear`` command)
+            resets it to ``None``, and no failed statement ever changes it,
+            which is what keeps statements atomic ([D-07]).
     """
 
     def __init__(self) -> None:

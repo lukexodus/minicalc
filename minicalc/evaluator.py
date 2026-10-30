@@ -119,6 +119,9 @@ class Evaluator:
         if op == "/":
             if right == 0:
                 raise DivisionByZeroError("division by zero", node.pos)
+            # Truncate toward zero, as the spec requires: Python's // floors, so
+            # divide the magnitudes and restore the sign explicitly. This keeps
+            # -7 / 2 at -3 while // below gives the floor, -4 ([D-06]).
             quotient = abs(left) // abs(right)
             if (left < 0) != (right < 0):
                 quotient = -quotient
@@ -130,6 +133,9 @@ class Evaluator:
         if op == "%":
             if right == 0:
                 raise DivisionByZeroError("division by zero", node.pos)
+            # Python's % is already floored and takes the divisor's sign, which
+            # is exactly the pairing the spec promises with // ([D-06]), so no
+            # sign fix-up is needed here.
             return self._checked(left % right, node.pos)
         if op == "**":
             return self._power(left, right, node.pos)
@@ -175,6 +181,9 @@ class Evaluator:
         if base == -1:
             return self._checked(1 if exponent % 2 == 0 else -1, pos)
         if exponent > 31:
+            # Short-circuit before computing: |base| >= 2 and exponent > 31 is
+            # always out of 32-bit range, and `2 ** 1000000000` must fail
+            # instantly rather than allocate a billion-digit integer (spec s.5).
             raise IntegerRangeError("integer result out of 32-bit range", pos)
         return self._checked(base**exponent, pos)
 

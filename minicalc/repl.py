@@ -33,13 +33,19 @@ class Repl:
     """Read, evaluate, print, and loop until ``:quit``, EOF, or Ctrl-C.
 
     Attributes:
-        PROMPT (ClassVar[str]): The input prompt, ``"minicalc> "``.
-        interpreter: The facade used for every non-meta-command line.
-        input_fn: Callable taking the prompt and returning one line; its
-            defaults match the built-in ``input``.
-        output_fn: Callable receiving one string per output line; its defaults
-            match the built-in ``print``.
-        color: Whether error rendering and display styling use ANSI codes.
+        PROMPT (ClassVar[str]): The input prompt, ``"minicalc> "``. A class
+            constant rather than an instance field so tests and callers can read
+            the exact prompt without constructing a REPL.
+        interpreter: The facade used for every non-meta-command line; the REPL
+            never reaches into the lexer, parser, or evaluator directly.
+        input_fn: Callable taking the prompt and returning one line; it defaults
+            to the built-in ``input``. Injection is what lets the CLI tests drive
+            a whole session from a list of strings ([D-14]).
+        output_fn: Callable receiving one string per output line; it defaults to
+            the built-in ``print``, so tests capture output without a terminal.
+        color: Whether error rendering and display styling use ANSI codes. The
+            decision is made once, by ``__main__`` through
+            ``display.use_color``, so piped output is plain text here.
     """
 
     PROMPT: ClassVar[str] = "minicalc> "

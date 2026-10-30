@@ -93,8 +93,12 @@ class Lexer:
     """Turn one source line into tokens.
 
     Attributes:
-        source: The single source line, without its newline.
-        line_no: 1-based line number stamped on every ``SourcePos``.
+        source: The single source line, without its newline. Held rather than
+            passed around so ``tokenize`` scans it once, left to right, with no
+            backtracking and no copy of the text.
+        line_no: 1-based line number stamped on every ``SourcePos``. A script
+            runs each line through a fresh lexer, so this is what makes an
+            error report the line inside the file rather than always 1.
     """
 
     def __init__(self, source: str, line_no: int = 1) -> None:
