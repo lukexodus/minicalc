@@ -22,8 +22,10 @@ class SourcePos:
     """A 1-based position in the original source text.
 
     Attributes:
-        line: 1-based line number.
-        col: 1-based column number; tabs count as one column.
+        line: 1-based line number, so script-mode errors can name the file line.
+        col: 1-based column number; tabs count as one column. ``render()``
+            indents the caret by ``col - 1``, so this field decides where the
+            caret lands under the offending character.
     """
 
     line: int
@@ -66,11 +68,21 @@ class MiniCalcError(Exception):
         self.source_line = source_line
 
     def __str__(self) -> str:
-        """Return the bare message, matching ``err.message``."""
+        """Return the bare message, matching ``err.message``.
+
+        Returns:
+            The message without the ``Error:`` heading or caret block that
+            :meth:`render` adds, so ``str(err)`` stays usable in logs.
+        """
         return self.message
 
     def __reduce__(self) -> tuple[object, tuple[object, ...]]:
-        """Preserve the full error state across ``pickle`` round-trips."""
+        """Preserve the full error state across ``pickle`` round-trips.
+
+        Returns:
+            The reconstructor pair Python's ``pickle`` protocol expects, so a
+            restored error still knows its position and source line.
+        """
         return (type(self), (self.message, self.pos, self.source_line))
 
     def with_source(self, source_line: str) -> "MiniCalcError":

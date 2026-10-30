@@ -65,10 +65,15 @@ class Token:
     """One lexical token and its position in the source line.
 
     Attributes:
-        type: The token kind.
-        lexeme: Exact source text of the token (``""`` for ``EOF``).
-        pos: 1-based line and column where the token starts.
+        type: The token kind; the parser switches on this, never on text.
+        lexeme: Exact source text of the token (``""`` for ``EOF``). It is kept
+            verbatim so parser errors can echo the offending punctuation (for
+            example ``expected ')', found '*'``) instead of re-slicing source.
+        pos: 1-based line and column where the token starts. Error positions
+            and the caret line under a bad token both come from this field, so
+            a wrong ``pos`` shows up as a caret pointing at the wrong column.
         value: Parsed integer for ``NUMBER`` tokens; ``None`` for all others.
+            The lexer parses once, so the evaluator never touches text.
     """
 
     type: TokenType
