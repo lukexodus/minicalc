@@ -58,4 +58,4 @@ Status: **open**
 | :--- | :--- | :--- | :--- |
 | DOC-001 | Class `Attributes:` docstrings and `check_docs.py` | `done` | Report: `docs/reports/DOC-001-opencode-class-docs.md`. Checker reports 0 violations on the merged tree (28 classes, 29 functions); 457 tests pass (439 pre-existing unchanged + 18 new). Merged `948013a` (PR #1) |
 | DOC-002 | README, LANGUAGE.md, examples, presentation notes | `needs-review` | Report: `docs/reports/DOC-002-gemini-user-docs.md` |
-| DOC-003 | Submission ZIP builder and verified delivery | `open` | Prompt: `docs/prompts/DOC-003.md`. Reserved [D-16] |
+| DOC-003 | Submission ZIP builder and verified delivery | `needs-review` | Report: `docs/reports/DOC-003-gemini-submission.md` |

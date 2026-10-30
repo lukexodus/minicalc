@@ -130,11 +130,18 @@ This file exists so that across API-credit-limited handoffs between APC AI insta
 - **Reasoning:** The spec is the arbiter; these are the questions the merged tracks answered differently or left open. Pinning each in both the spec and a golden file means a future regression shows up as a failing case rather than a rediscovered ambiguity.  
 - **Affects:** `docs/context/language-spec.md`, `tests/golden/rulings.mc`, `tests/golden/rulings.out`, `minicalc/interpreter.py`, DOC-002 (must document rulings 1–7).
 
-**[D-16]** RESERVED for DOC-003: final submission checklist outcomes and any cut-line decisions.  
-- **Date / Session:** reserved 2026-10-26  
-- **Decision:** (to be written by the agent running DOC-003)  
-- **Reasoning:** (to be written)  
-- **Affects:** (to be written)
+**[D-16]** Final submission ZIP packaging, verification, exclusions, determinism, and cut-line outcome (DOC-003).  
+- **Date / Session:** 2026-10-30, DOC-003 implementation session (Gemini)  
+- **Decision:** Locked submission packaging and delivery specifications:  
+  1. **Packaging Builder (`scripts/make_submission.py`):** Packages the deliverable codebase into a clean, deterministic ZIP archive under a single top-level directory (`MiniCalc-CMPSC132-FinalProject/`) using standard forward slashes.  
+  2. **Shipped Manifest:** Includes `minicalc/` (all modules), `tests/` (unit tests, golden tests, differential test harness, excluding internal tests), `examples/` (`01_basics.mc` through `06_showcase.mc`), `main.py`, `README.md`, `requirements-dev.txt`, `pytest.ini`, `docs/LANGUAGE.md`, `docs/PRESENTATION.md`, `docs/context/language-spec.md`, `docs/context/interface-contract.md`, and `scripts/check_docs.py`.  
+  3. **Exclusion List:** Excludes `.git/`, worktrees, `patch/`, `docs/reports/`, `docs/prompts/`, `docs/tasks/`, `docs/decisions/`, `docs/guide/`, all other scripts (`make_submission.py`, `task-worktree.sh`, `apc-bundle.sh`, `manage-decisions.py`), build caches (`__pycache__`, `.pytest_cache`, `*.pyc`), `dist/`, `*.zip`, `.venv`, and `tests/test_make_submission.py`.  
+  4. **`test_make_submission.py` Exclusion:** `tests/test_make_submission.py` specifically tests `scripts/make_submission.py`. Because `make_submission.py` is an internal orchestration script excluded from the final shipping ZIP, shipping `test_make_submission.py` would cause the test suite in the unpacked ZIP to fail with an import error. Therefore, `tests/test_make_submission.py` is excluded from the ZIP and this exclusion is asserted in its own unit test.  
+  5. **Archive Determinism & 5 MB Cap:** All archive members use fixed timestamps (`2026-10-30 00:00:00`), standard UNIX file mode permissions (`0o644`), standard zip deflate compression, and lexicographically sorted member ordering. Independent builds produce byte-identical archives with matching SHA-256 hashes. The builder strictly enforces a 5 MB upper size cap (the built archive is ~119 KB).  
+  6. **Automated Verification (`--verify`):** Extracts the archive into a fresh temporary directory and verifies that `pytest -q`, `scripts/check_docs.py`, one-shot CLI execution, `examples/01_basics.mc` (exit 0), `examples/05_errors.mc` (exit 1), and a clean scan of shipped documentation for excluded paths all pass cleanly.  
+  7. **Cut-Line Outcome:** None. Zero features or planned deliverables were cut. All language requirements, grammar operators, 32-bit checked integer semantics, built-in functions, REPL and CLI modes, documentation standards, and verification suites were fully implemented and pass all tests.  
+- **Reasoning:** Graders require an unencumbered, runnable, and verifiable project archive containing only the language implementation, documentation, and tests, free of development orchestration artifacts. Verifying the unpacked archive end-to-end eliminates packaging defects prior to final submission.  
+- **Affects:** `scripts/make_submission.py`, `tests/test_make_submission.py`, `docs/guide/SUBMISSION-CHECKLIST.md`, and final distribution artifacts.
 
 **[D-17]** Post-integration fixes: `ans` help wording and deterministic merged-stream order (FIX-001).  
 - **Date / Session:** 2026-10-26, FIX-001 implementation session (Claude Code)  
